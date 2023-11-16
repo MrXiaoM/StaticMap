@@ -6,7 +6,7 @@ public final class StaticMap extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        new StaticMapListener();
+        new StaticMapListener(this);
         this.saveDefaultConfig();
         this.reloadConfig();
 

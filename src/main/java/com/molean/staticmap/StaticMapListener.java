@@ -25,10 +25,10 @@ import java.util.Objects;
 public class StaticMapListener implements Listener {
     private final int cost;
     private final String lore;
-
-    public StaticMapListener() {
-        Bukkit.getPluginManager().registerEvents(this, JavaPlugin.getPlugin(StaticMap.class));
-        FileConfiguration config = JavaPlugin.getPlugin(StaticMap.class).getConfig();
+    private final StaticMap plugin;
+    public StaticMapListener(StaticMap plugin) {
+        Bukkit.getPluginManager().registerEvents(this, this.plugin = plugin);
+        FileConfiguration config = plugin.getConfig();
         cost = config.getInt("cost");
         lore = config.getString("lore");
     }
@@ -61,7 +61,7 @@ public class StaticMapListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         ItemStack itemStack = event.getPlayer().getInventory().getItemInMainHand();
-        Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(StaticMap.class), () -> {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!itemStack.getType().equals(Material.FILLED_MAP)) {
                 return;
             }
