@@ -2,6 +2,7 @@ package com.molean.staticmap;
 
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -112,7 +113,7 @@ public class StaticMapListener implements Listener {
         if (renameText != null && !renameText.isEmpty()) {
             itemMeta.displayName(Component.text(Objects.requireNonNull(event.getInventory().getRenameText())));
         }
-        itemMeta.lore(List.of(Component.text(lore)));
+        itemMeta.lore(List.of(LegacyComponentSerializer.legacySection().deserialize(lore.replaceAll("&([0-9A-Fa-fLMNKORlmnkor])", "§$1"))));
         PDHSimplified.of(itemMeta).setBytes("colors", colors);
         itemStack.setItemMeta(itemMeta);
         itemStack.setAmount(firstItem.getAmount());
