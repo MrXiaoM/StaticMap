@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'io.papermc.paperweight.userdev' version '1.3.9'
+}
+
+group = 'com.molean'
+version = '1.2.1-SNAPSHOT'
+
+repositories {
+    maven { url "https://mirrors.huaweicloud.com/repository/maven" }
+    maven { url "https://repo.papermc.io/repository/maven-public/" }
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    mavenCentral()
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+}
+
+dependencies {
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.4-R0.1-SNAPSHOT")
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+reobfJar {
+    outputJar.set(layout.buildDirectory.file("libs/${archivesBaseName}-${project.version}.jar"))
+}
+tasks.build.dependsOn(reobfJar)
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release.set(targetJavaVersion)
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from(sourceSets.main.resources.srcDirs) {
+        expand('version': project.version)
+        include 'plugin.yml'
+    }
+}
