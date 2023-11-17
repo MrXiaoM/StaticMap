@@ -2,7 +2,10 @@ package com.molean.staticmap;
 
 import com.molean.staticmap.nms.VersionManager;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public final class StaticMap extends JavaPlugin {
 
@@ -22,6 +25,16 @@ public final class StaticMap extends JavaPlugin {
         }
         this.saveDefaultConfig();
         this.reloadConfig();
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (sender.isOp()) {
+            this.saveDefaultConfig();
+            this.reloadConfig();
+            sender.sendMessage("配置文件已重载");
+        }
+        return true;
     }
 
     @Override

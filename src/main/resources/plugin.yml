@@ -6,3 +6,6 @@ permissions:
   staticmap.use:
     description: Allows build static map
     default: true
+commands:
+  staticmap:
+    description: Reload config
