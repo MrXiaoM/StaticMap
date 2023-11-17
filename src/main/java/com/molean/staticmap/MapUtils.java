@@ -1,7 +1,7 @@
 package com.molean.staticmap;
 
 
-import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import com.molean.staticmap.nms.VersionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.MapMeta;
@@ -10,7 +10,6 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +48,7 @@ public class MapUtils {
                     byte color = bytes[i];
                     mapCanvas.setPixel(x, y, color);
                 }
-                hashCode = bytes.hashCode();
+                hashCode = Arrays.hashCode(bytes);
             }
         });
         mapMeta.setMapView(mapView);
@@ -59,7 +58,6 @@ public class MapUtils {
     public static byte[] getColors(MapMeta mapMeta) {
         MapView mapView = mapMeta.getMapView();
 
-        StringBuilder colors = new StringBuilder();
         if (mapView == null) {
             return null;
         }
@@ -68,16 +66,7 @@ public class MapUtils {
             return null;
         }
         MapRenderer renderer = renderers.get(0);
-
-        try {
-            Field worldMapField = renderer.getClass().getDeclaredField("worldMap");
-            worldMapField.setAccessible(true);
-            MapItemSavedData worldMap = (MapItemSavedData) worldMapField.get(renderer);
-            return worldMap.colors;
-
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return VersionManager.getColors(renderer);
     }
 
 }
