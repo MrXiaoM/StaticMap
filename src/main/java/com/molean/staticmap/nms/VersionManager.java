@@ -9,7 +9,7 @@ public class VersionManager {
         return Bukkit.getServer().getClass().getPackage().getName().substring(23);
     }
     public enum Status {
-        OK, LEGACY, INVALID
+        OK, LEGACY, LEGACY_OLD, INVALID
     }
     public static Status init() {
         String ver = getVersion();
@@ -17,21 +17,22 @@ public class VersionManager {
             nms = new Version_1_17();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_14", "v1_15", "v1_16")) {
+        if (matchVersions(ver, "v1_13", "v1_14", "v1_15", "v1_16")) {
             nms = new VersionLegacy();
             return Status.LEGACY;
         }
-        if (matchVersions(ver, "1_8", "v1_9", "v1_10", "v1_11", "v1_12", "v1_13")) {
-            // TODO: 1.13 及以下没有 PersistentDataHolder，需要其它方式(如NBT)储存数据
+        if (matchVersions(ver, "1_8", "v1_9", "v1_10", "v1_11", "v1_12")) {
+            nms = new VersionLegacy();
+            return Status.LEGACY_OLD;
         }
         return Status.INVALID;
     }
 
     private static boolean matchVersions(String ver, String... versions) {
         for (String v : versions) {
-            if (!ver.startsWith(v)) return false;
+            if (ver.startsWith(v)) return true;
         }
-        return true;
+        return false;
     }
 
     public static byte[] getColors(MapRenderer renderer) {

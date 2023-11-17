@@ -11,6 +11,7 @@ allprojects {
         maven { url "https://mirrors.huaweicloud.com/repository/maven" }
         maven { url "https://repo.papermc.io/repository/maven-public/" }
         maven { url "https://mvn.lumine.io/repository/maven/" }
+        maven { url "https://repo.codemc.io/repository/maven-public/" }
         maven {
             name = 'spigotmc-repo'
             url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
@@ -30,6 +31,7 @@ allprojects {
 }
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.14-R0.1-SNAPSHOT")
+    compileOnly 'de.tr7zw:item-nbt-api-plugin:2.11.1'
     implementation 'org.jetbrains:annotations:23.0.0'
     for (Project proj : project(":nms").subprojects) {
         implementation(proj)

@@ -20,9 +20,12 @@ public final class StaticMap extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        if (init.equals(VersionManager.Status.OK)) {
-            new StaticMapListener(this);
+        if (!DataSimplified.isPDHAvailable() && !Bukkit.getPluginManager().isPluginEnabled("NBTAPI")) {
+            getLogger().warning("当前服务端不支持 Persistence 特性，请安装 item-nbt-api-plugin 插件");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
         }
+        new StaticMapListener(this, init.equals(VersionManager.Status.LEGACY_OLD));
         this.saveDefaultConfig();
         this.reloadConfig();
     }

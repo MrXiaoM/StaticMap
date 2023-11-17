@@ -4,7 +4,7 @@ import org.bukkit.map.MapRenderer;
 import java.lang.reflect.Field;
 
 /**
- * 1.14-1.16.5
+ * 1.8-1.16.5
  */
 public class VersionLegacy implements IVersion {
     @Override

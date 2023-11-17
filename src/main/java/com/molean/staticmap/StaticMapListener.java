@@ -20,10 +20,11 @@ import org.bukkit.inventory.meta.MapMeta;
 
 public class StaticMapListener implements Listener {
     private final StaticMap plugin;
-    public StaticMapListener(StaticMap plugin) {
+    private final Material mapMaterial;
+    public StaticMapListener(StaticMap plugin, boolean legacy) {
         Bukkit.getPluginManager().registerEvents(this, this.plugin = plugin);
+        mapMaterial = legacy ? Material.MAP : Material.FILLED_MAP;
     }
-
 
     @EventHandler
     public void on(EntityAddToWorldEvent event) {
@@ -33,13 +34,13 @@ public class StaticMapListener implements Listener {
         }
         ItemFrame itemFrame = (ItemFrame) entity;
         ItemStack item = itemFrame.getItem();
-        if (!item.getType().equals(Material.FILLED_MAP)) {
+        if (!item.getType().equals(mapMaterial)) {
             return;
         }
-
-        if (PDHSimplified.of(item.getItemMeta()).has("colors")) {
+        DataSimplified data = DataSimplified.of(item);
+        if (data.has("colors")) {
             ItemMeta itemMeta = getItemMeta(item);
-            byte[] bytes = PDHSimplified.of(item.getItemMeta()).getAsBytes("colors");
+            byte[] bytes = data.getAsBytes("colors");
             if (bytes != null) {
                 MapUtils.updateStaticMap(bytes, (MapMeta) itemMeta);
                 item.setItemMeta(itemMeta);
@@ -52,11 +53,11 @@ public class StaticMapListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         ItemStack itemStack = event.getPlayer().getInventory().getItemInMainHand();
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (!itemStack.getType().equals(Material.FILLED_MAP)) {
+            if (!itemStack.getType().equals(mapMaterial)) {
                 return;
             }
             MapMeta itemMeta = getItemMeta(itemStack);
-            byte[] colors = PDHSimplified.of(itemMeta).getAsBytes("colors");
+            byte[] colors = DataSimplified.of(itemStack).getAsBytes("colors");
             MapUtils.updateStaticMap(colors, itemMeta);
             itemStack.setItemMeta(itemMeta);
         }, 1L);
@@ -66,10 +67,10 @@ public class StaticMapListener implements Listener {
     public void onPlayer(PlayerItemHeldEvent event) {
         int newSlot = event.getNewSlot();
         ItemStack itemStack = event.getPlayer().getInventory().getItem(newSlot);
-        if (itemStack == null || !itemStack.getType().equals(Material.FILLED_MAP)) {
+        if (itemStack == null || !itemStack.getType().equals(mapMaterial)) {
             return;
         }
-        byte[] colors = PDHSimplified.of(itemStack.getItemMeta()).getAsBytes("colors");
+        byte[] colors = DataSimplified.of(itemStack).getAsBytes("colors");
         ItemMeta itemMeta = itemStack.getItemMeta();
         MapUtils.updateStaticMap(colors, (MapMeta) itemMeta);
         itemStack.setItemMeta(itemMeta);
@@ -89,14 +90,14 @@ public class StaticMapListener implements Listener {
         if (secondItem != null) {
             return;
         }
-        if (firstItem == null || !firstItem.getType().equals(Material.FILLED_MAP)) {
+        if (firstItem == null || !firstItem.getType().equals(mapMaterial)) {
             return;
         }
 
-        if (PDHSimplified.of(firstItem.getItemMeta()).has("colors")) {
+        if (DataSimplified.of(firstItem).has("colors")) {
             return;
         }
-        ItemStack itemStack = new ItemStack(Material.FILLED_MAP);
+        ItemStack itemStack = new ItemStack(mapMaterial);
         ItemMeta itemMeta = getItemMeta(itemStack);
 
         MapMeta mapMeta = getItemMeta(firstItem);
@@ -110,8 +111,15 @@ public class StaticMapListener implements Listener {
                 plugin.getConfig().getString("lore", "")
                         .replaceAll("&([0-9A-Fa-fLMNKORlmnkor])", "§$1")
         ));
-        PDHSimplified.of(itemMeta).setBytes("colors", colors);
         itemStack.setItemMeta(itemMeta);
+        DataSimplified data = DataSimplified.of(itemStack);
+        data.setBytes("colors", colors);
+        if (!DataSimplified.isPDHAvailable()) {
+            itemStack = data.nbtToItemStack();
+        }
+        else {
+            itemStack.setItemMeta(itemMeta);
+        }
         itemStack.setAmount(firstItem.getAmount());
         inv.setRepairCost(plugin.getConfig().getInt("cost"));
         event.setResult(itemStack);

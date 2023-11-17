@@ -6,7 +6,6 @@ import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Locale;
-import java.util.UUID;
 
 public class PDHSimplified {
 
