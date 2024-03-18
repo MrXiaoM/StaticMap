@@ -8,12 +8,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.ItemFrame;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.CartographyInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
@@ -124,6 +127,57 @@ public class StaticMapListener implements Listener {
         inv.setRepairCost(plugin.getConfig().getInt("cost"));
         event.setResult(itemStack);
     }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent e) {
+        for (ItemStack item : e.getInventory().getMatrix()) {
+            if (item == null) continue;
+            byte[] colors = DataSimplified.of(item).getAsBytes("colors");
+            if (colors == null) continue;
+            e.setCancelled(true);
+            for (HumanEntity viewer : e.getInventory().getViewers()) {
+                viewer.sendMessage("§7不能复制跨服地图画");
+            }
+            break;
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent e) {
+        if (e.getClickedInventory() instanceof CartographyInventory) {
+            handleInv(e.getClickedInventory(), e.getCurrentItem(), e);
+        }
+    }
+
+    @EventHandler
+    public void onDrag(InventoryDragEvent e) {
+        if (e.getInventory() instanceof CartographyInventory) {
+            if (handleInv(e.getInventory(), e.getOldCursor(), e)) return;
+            if (handleInv(e.getInventory(), e.getCursor(), e)) return;
+            for (ItemStack item : e.getNewItems().values()) {
+                if (handleInv(e.getInventory(), item, e)) return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onItemMove(InventoryMoveItemEvent e) {
+        if (e.getDestination() instanceof CartographyInventory) {
+            handleInv(e.getDestination(), e.getItem(), e);
+        }
+    }
+
+    public boolean handleInv(Inventory inv, ItemStack item, Cancellable e) {
+        if (item == null) return false;
+        byte[] colors = DataSimplified.of(item).getAsBytes("colors");
+        if (colors == null) return false;
+        e.setCancelled(true);
+        for (HumanEntity viewer : inv.getViewers()) {
+            viewer.sendMessage("§7不能复制跨服地图画");
+        }
+        return true;
+    }
+
 
     @SuppressWarnings({"unchecked"})
     public static <T extends ItemMeta> T getItemMeta(ItemStack item) {

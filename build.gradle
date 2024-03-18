@@ -38,6 +38,12 @@ dependencies {
     }
 }
 
+shadowJar {
+    archiveClassifier = ""
+    relocate("org.intellij.lang.annotations", "com.molean.staticmap.utils.annorations.intellij")
+    relocate("org.jetbrains.annotations", "com.molean.staticmap.utils.annorations.jetbrains")
+}
+tasks.build.dependsOn(shadowJar)
 
 processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
