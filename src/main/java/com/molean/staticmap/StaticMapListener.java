@@ -134,28 +134,30 @@ public class StaticMapListener implements Listener {
             if (item == null) continue;
             byte[] colors = DataSimplified.of(item).getAsBytes("colors");
             if (colors == null) continue;
-            e.setCancelled(true);
-            for (HumanEntity viewer : e.getInventory().getViewers()) {
-                viewer.sendMessage("§7不能复制跨服地图画");
+            if (!e.getInventory().getViewers().stream().allMatch(it -> it.hasPermission("staticmap.copy"))) {
+                e.setCancelled(true);
+                for (HumanEntity viewer : e.getInventory().getViewers()) {
+                    viewer.sendMessage("§7不能复制跨服地图画");
+                }
+                break;
             }
-            break;
         }
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         if (e.getClickedInventory() instanceof CartographyInventory) {
-            handleInv(e.getClickedInventory(), e.getCurrentItem(), e);
+            handleInv((CartographyInventory) e.getClickedInventory(), e.getCurrentItem(), e);
         }
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent e) {
         if (e.getInventory() instanceof CartographyInventory) {
-            if (handleInv(e.getInventory(), e.getOldCursor(), e)) return;
-            if (handleInv(e.getInventory(), e.getCursor(), e)) return;
+            if (handleInv((CartographyInventory) e.getInventory(), e.getOldCursor(), e)) return;
+            if (handleInv((CartographyInventory) e.getInventory(), e.getCursor(), e)) return;
             for (ItemStack item : e.getNewItems().values()) {
-                if (handleInv(e.getInventory(), item, e)) return;
+                if (handleInv((CartographyInventory) e.getInventory(), item, e)) return;
             }
         }
     }
@@ -163,19 +165,22 @@ public class StaticMapListener implements Listener {
     @EventHandler
     public void onItemMove(InventoryMoveItemEvent e) {
         if (e.getDestination() instanceof CartographyInventory) {
-            handleInv(e.getDestination(), e.getItem(), e);
+            handleInv((CartographyInventory) e.getDestination(), e.getItem(), e);
         }
     }
 
-    public boolean handleInv(Inventory inv, ItemStack item, Cancellable e) {
+    public boolean handleInv(CartographyInventory inv, ItemStack item, Cancellable e) {
         if (item == null) return false;
         byte[] colors = DataSimplified.of(item).getAsBytes("colors");
         if (colors == null) return false;
         e.setCancelled(true);
-        for (HumanEntity viewer : inv.getViewers()) {
-            viewer.sendMessage("§7不能复制跨服地图画");
+        if (!inv.getViewers().stream().allMatch(it -> it.hasPermission("staticmap.copy"))) {
+            for (HumanEntity viewer : inv.getViewers()) {
+                viewer.sendMessage("§7不能复制跨服地图画");
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
 
