@@ -1,7 +1,12 @@
 package com.molean.staticmap.nms;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
 
 public class VersionManager {
     private static IVersion nms = null;
@@ -43,5 +48,9 @@ public class VersionManager {
 
     public static byte[] getColors(MapRenderer renderer) {
         return nms.getColors(renderer);
+    }
+
+    public static List<MapCursor> getCursors(Player player, MapRenderer renderer) {
+        return nms.getCursors(player, renderer);
     }
 }

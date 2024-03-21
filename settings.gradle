@@ -8,5 +8,4 @@ pluginManagement {
 rootProject.name = 'StaticMap'
 include ':nms'
 include ':nms:shared'
-include ':nms:legacy'
 include ':nms:1_17'

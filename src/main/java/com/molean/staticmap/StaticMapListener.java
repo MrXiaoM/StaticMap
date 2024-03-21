@@ -4,10 +4,7 @@ import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,10 +13,15 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.CartographyInventory;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
+import org.bukkit.map.MapCursor;
+
+import java.util.List;
+
+import static com.molean.staticmap.MapUtils.fromBytes;
+import static com.molean.staticmap.MapUtils.toBytes;
 
 public class StaticMapListener implements Listener {
     private final StaticMap plugin;
@@ -43,9 +45,10 @@ public class StaticMapListener implements Listener {
         DataSimplified data = DataSimplified.of(item);
         if (data.has("colors")) {
             ItemMeta itemMeta = getItemMeta(item);
-            byte[] bytes = data.getAsBytes("colors");
-            if (bytes != null) {
-                MapUtils.updateStaticMap(bytes, (MapMeta) itemMeta);
+            byte[] colors = data.getAsBytes("colors");
+            List<MapCursor> cursors = fromBytes(data.getAsBytes("cursors"));
+            if (colors != null) {
+                MapUtils.updateStaticMap((MapMeta) itemMeta, colors, cursors);
                 item.setItemMeta(itemMeta);
                 itemFrame.setItem(item);
             }
@@ -60,8 +63,10 @@ public class StaticMapListener implements Listener {
                 return;
             }
             MapMeta itemMeta = getItemMeta(itemStack);
-            byte[] colors = DataSimplified.of(itemStack).getAsBytes("colors");
-            MapUtils.updateStaticMap(colors, itemMeta);
+            DataSimplified data = DataSimplified.of(itemStack);
+            byte[] colors = data.getAsBytes("colors");
+            List<MapCursor> cursors = fromBytes(data.getAsBytes("cursors"));
+            MapUtils.updateStaticMap(itemMeta, colors, cursors);
             itemStack.setItemMeta(itemMeta);
         }, 1L);
     }
@@ -73,18 +78,27 @@ public class StaticMapListener implements Listener {
         if (itemStack == null || !itemStack.getType().equals(mapMaterial)) {
             return;
         }
-        byte[] colors = DataSimplified.of(itemStack).getAsBytes("colors");
+        DataSimplified data = DataSimplified.of(itemStack);
+        byte[] colors = data.getAsBytes("colors");
+        List<MapCursor> cursors = fromBytes(data.getAsBytes("cursors"));
         ItemMeta itemMeta = itemStack.getItemMeta();
-        MapUtils.updateStaticMap(colors, (MapMeta) itemMeta);
+        MapUtils.updateStaticMap((MapMeta) itemMeta, colors, cursors);
         itemStack.setItemMeta(itemMeta);
     }
 
     @EventHandler
     public void on(PrepareAnvilEvent event) {
+        Player player = null;
         for (HumanEntity viewer : event.getViewers()) {
             if (!viewer.hasPermission("staticmap.use")) {
                 return;
             }
+            if (player == null && viewer instanceof Player) {
+                player = (Player) viewer;
+            }
+        }
+        if (player == null) {
+            return;
         }
         AnvilInventory inv = event.getInventory();
 
@@ -105,6 +119,7 @@ public class StaticMapListener implements Listener {
 
         MapMeta mapMeta = getItemMeta(firstItem);
         byte[] colors = MapUtils.getColors(mapMeta);
+        List<MapCursor> cursors = MapUtils.getCursors(player, mapMeta);
 
         String renameText = event.getInventory().getRenameText();
         if (renameText != null && !renameText.isEmpty()) {
@@ -117,6 +132,12 @@ public class StaticMapListener implements Listener {
         itemStack.setItemMeta(itemMeta);
         DataSimplified data = DataSimplified.of(itemStack);
         data.setBytes("colors", colors);
+        if (cursors != null && !cursors.isEmpty()) {
+            byte[] bytes = toBytes(cursors);
+            if (bytes != null) {
+                data.setBytes("cursors", bytes);
+            }
+        }
         if (!DataSimplified.isPDHAvailable()) {
             itemStack = data.nbtToItemStack();
         }

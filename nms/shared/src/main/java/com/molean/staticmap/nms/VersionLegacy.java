@@ -1,7 +1,12 @@
 package com.molean.staticmap.nms;
 
+import org.bukkit.entity.Player;
+import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
+
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 1.8-1.16.5
@@ -9,7 +14,6 @@ import java.lang.reflect.Field;
 public class VersionLegacy implements IVersion {
     @Override
     public byte[] getColors(MapRenderer renderer) {
-
         try {
             Field worldMapField = renderer.getClass().getDeclaredField("worldMap");
             worldMapField.setAccessible(true);
@@ -19,5 +23,11 @@ public class VersionLegacy implements IVersion {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<MapCursor> getCursors(Player player, MapRenderer renderer) {
+        // TODO
+        return new ArrayList<>();
     }
 }
