@@ -28,6 +28,12 @@ public class VersionManager {
         return Status.INVALID;
     }
 
+    public static void registerListener(JavaPlugin plugin) {
+        if (nms != null) {
+            Bukkit.getPluginManager().registerEvents(nms, plugin);
+        }
+    }
+
     private static boolean matchVersions(String ver, String... versions) {
         for (String v : versions) {
             if (ver.startsWith(v)) return true;

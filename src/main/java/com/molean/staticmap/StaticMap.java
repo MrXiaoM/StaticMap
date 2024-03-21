@@ -25,6 +25,7 @@ public final class StaticMap extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        VersionManager.registerListener(this);
         new StaticMapListener(this, init.equals(VersionManager.Status.LEGACY_OLD));
         this.saveDefaultConfig();
         this.reloadConfig();
