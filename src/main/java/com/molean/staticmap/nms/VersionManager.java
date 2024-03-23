@@ -18,7 +18,15 @@ public class VersionManager {
     }
     public static Status init() {
         String ver = getVersion();
-        if (matchVersions(ver, "v1_17", "v1_18", "v1_19", "v1_20")) {
+        if (matchVersions(ver, "v1_20")) {
+            nms = new Version_1_20();
+            return Status.OK;
+        }
+        if (matchVersions(ver, "v1_19")) {
+            nms = new Version_1_20();
+            return Status.OK;
+        }
+        if (matchVersions(ver, "v1_17", "v1_18")) {
             nms = new Version_1_17();
             return Status.OK;
         }

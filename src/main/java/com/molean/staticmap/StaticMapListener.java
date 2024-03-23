@@ -32,7 +32,7 @@ public class StaticMapListener implements Listener {
     }
 
     @EventHandler
-    public void on(EntityAddToWorldEvent event) {
+    public void onEntityAddToWorld(EntityAddToWorldEvent event) {
         Entity entity = event.getEntity();
         if (!entity.getType().equals(EntityType.ITEM_FRAME)) {
             return;
@@ -87,7 +87,7 @@ public class StaticMapListener implements Listener {
     }
 
     @EventHandler
-    public void on(PrepareAnvilEvent event) {
+    public void onPrepareAnvil(PrepareAnvilEvent event) {
         Player player = null;
         for (HumanEntity viewer : event.getViewers()) {
             if (!viewer.hasPermission("staticmap.use")) {
@@ -150,7 +150,7 @@ public class StaticMapListener implements Listener {
     }
 
     @EventHandler
-    public void onCraft(CraftItemEvent e) {
+    public void onCraftItem(CraftItemEvent e) {
         for (ItemStack item : e.getInventory().getMatrix()) {
             if (item == null) continue;
             byte[] colors = DataSimplified.of(item).getAsBytes("colors");
@@ -166,14 +166,14 @@ public class StaticMapListener implements Listener {
     }
 
     @EventHandler
-    public void onClick(InventoryClickEvent e) {
+    public void onInventoryClick(InventoryClickEvent e) {
         if (e.getClickedInventory() instanceof CartographyInventory) {
             handleInv((CartographyInventory) e.getClickedInventory(), e.getCurrentItem(), e);
         }
     }
 
     @EventHandler
-    public void onDrag(InventoryDragEvent e) {
+    public void onInventoryDrag(InventoryDragEvent e) {
         if (e.getInventory() instanceof CartographyInventory) {
             if (handleInv((CartographyInventory) e.getInventory(), e.getOldCursor(), e)) return;
             if (handleInv((CartographyInventory) e.getInventory(), e.getCursor(), e)) return;
@@ -184,7 +184,7 @@ public class StaticMapListener implements Listener {
     }
 
     @EventHandler
-    public void onItemMove(InventoryMoveItemEvent e) {
+    public void onInventoryMoveItem(InventoryMoveItemEvent e) {
         if (e.getDestination() instanceof CartographyInventory) {
             handleInv((CartographyInventory) e.getDestination(), e.getItem(), e);
         }
