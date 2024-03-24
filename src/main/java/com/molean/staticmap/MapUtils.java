@@ -94,7 +94,7 @@ public class MapUtils {
             byte type = in.readByte();
             boolean visible = in.readBoolean();
             String caption = in.readUTF();
-            list.add(new MapCursor(x, y, direction, type, visible, caption));
+            list.add(new MapCursor(x, y, direction, type, visible, caption.isEmpty() ? null : caption));
         }
         return list;
     }
