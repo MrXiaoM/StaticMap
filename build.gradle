@@ -47,6 +47,7 @@ tasks.build.dependsOn(shadowJar)
 
 processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from("LICENSE")
     from(sourceSets.main.resources.srcDirs) {
         expand('version': project.version)
         include 'plugin.yml'
