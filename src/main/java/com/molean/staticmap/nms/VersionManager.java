@@ -26,7 +26,11 @@ public class VersionManager {
             nms = new Version_1_19();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_17", "v1_18")) {
+        if (matchVersions(ver, "v1_18")) {
+            nms = new Version_1_18();
+            return Status.OK;
+        }
+        if (matchVersions(ver, "v1_17")) {
             nms = new Version_1_17();
             return Status.OK;
         }

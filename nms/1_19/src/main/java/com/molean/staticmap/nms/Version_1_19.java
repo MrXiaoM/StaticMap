@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * 1.19
  */
+@SuppressWarnings({"deprecation"})
 public class Version_1_19 implements IVersion {
     @Override
     public byte[] getColors(MapRenderer renderer) {
