@@ -4,8 +4,12 @@ import com.molean.staticmap.nms.VersionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.map.MapCursor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 public final class StaticMap extends JavaPlugin {
 
@@ -39,6 +43,22 @@ public final class StaticMap extends JavaPlugin {
             sender.sendMessage("配置文件已重载");
         }
         return true;
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        FileConfiguration config = getConfig();
+
+        MapUtils.hiddenCursors.clear();
+        for (String s : config.getStringList("hidden-cursors")) {
+            if (s.equals("*")) {
+                MapUtils.hiddenCursors.addAll(Arrays.asList(MapCursor.Type.values()));
+                break;
+            }
+            MapCursor.Type type = MapCursor.Type.valueOf(s.toUpperCase());
+            MapUtils.hiddenCursors.add(type);
+        }
     }
 
     @Override

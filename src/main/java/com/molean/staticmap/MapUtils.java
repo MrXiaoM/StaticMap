@@ -11,16 +11,16 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+@SuppressWarnings({"deprecation"})
 public class MapUtils {
 
     abstract static class MyMapRenderer extends MapRenderer {
         public int hashCode = 0;
     }
+
+    protected static final Set<MapCursor.Type> hiddenCursors = new HashSet<>();
 
     public static void updateStaticMap(MapMeta mapMeta, byte[] bytes, List<MapCursor> cursors) {
         if (bytes == null) {
@@ -52,7 +52,7 @@ public class MapUtils {
                 }
                 if (cursors != null && !cursors.isEmpty()) {
                     for (MapCursor cursor : cursors) {
-                        if (cursor.getType().equals(MapCursor.Type.WHITE_POINTER)) continue;
+                        if (hiddenCursors.contains(cursor.getType())) continue;
                         mapCanvas.getCursors().addCursor(cursor);
                     }
                 }
