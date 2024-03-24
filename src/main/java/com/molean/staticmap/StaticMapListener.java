@@ -168,7 +168,7 @@ public class StaticMapListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getClickedInventory().getClass().getName().contains("Cartography")) {
+        if (e.getClickedInventory() != null && e.getClickedInventory().getClass().getName().contains("Cartography")) {
             handleInv(e.getClickedInventory(), e.getCurrentItem(), e);
         }
     }
