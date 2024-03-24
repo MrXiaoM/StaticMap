@@ -12,7 +12,7 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.CartographyInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
@@ -168,16 +168,16 @@ public class StaticMapListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getDestination().getClass().getName().contains("Cartography")) {
+        if (e.getClickedInventory().getClass().getName().contains("Cartography")) {
             handleInv(e.getClickedInventory(), e.getCurrentItem(), e);
         }
     }
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent e) {
-        if (e.getDestination().getClass().getName().contains("Cartography")) {
-            if (handleInv((CartographyInventory) e.getInventory(), e.getOldCursor(), e)) return;
-            if (handleInv((CartographyInventory) e.getInventory(), e.getCursor(), e)) return;
+        if (e.getInventory().getClass().getName().contains("Cartography")) {
+            if (handleInv(e.getInventory(), e.getOldCursor(), e)) return;
+            if (handleInv(e.getInventory(), e.getCursor(), e)) return;
             for (ItemStack item : e.getNewItems().values()) {
                 if (handleInv(e.getInventory(), item, e)) return;
             }
@@ -187,7 +187,7 @@ public class StaticMapListener implements Listener {
     @EventHandler
     public void onInventoryMoveItem(InventoryMoveItemEvent e) {
         if (e.getDestination().getClass().getName().contains("Cartography")) {
-            handleInv((CartographyInventory) e.getDestination(), e.getItem(), e);
+            handleInv(e.getDestination(), e.getItem(), e);
         }
     }
 
