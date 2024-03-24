@@ -115,7 +115,7 @@ public class StaticMapListener implements Listener {
             return;
         }
         ItemStack itemStack = new ItemStack(mapMaterial);
-        ItemMeta itemMeta = getItemMeta(itemStack);
+        MapMeta itemMeta = getItemMeta(itemStack);
 
         MapMeta mapMeta = getItemMeta(firstItem);
         byte[] colors = MapUtils.getColors(mapMeta);
@@ -129,6 +129,7 @@ public class StaticMapListener implements Listener {
                 plugin.getConfig().getString("lore", "")
                         .replaceAll("&([0-9A-Fa-fLMNKORlmnkor])", "§$1")
         ));
+        MapUtils.updateStaticMap(itemMeta, colors, cursors);
         itemStack.setItemMeta(itemMeta);
         DataSimplified data = DataSimplified.of(itemStack);
         data.setBytes("colors", colors);
@@ -142,7 +143,7 @@ public class StaticMapListener implements Listener {
             itemStack = data.nbtToItemStack();
         }
         else {
-            itemStack.setItemMeta(itemMeta);
+            itemStack.setItemMeta(data.pdh.getHolder());
         }
         itemStack.setAmount(firstItem.getAmount());
         inv.setRepairCost(plugin.getConfig().getInt("cost"));

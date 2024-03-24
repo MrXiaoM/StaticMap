@@ -52,6 +52,7 @@ public class MapUtils {
                 }
                 if (cursors != null && !cursors.isEmpty()) {
                     for (MapCursor cursor : cursors) {
+                        if (cursor.getType().equals(MapCursor.Type.WHITE_POINTER)) continue;
                         mapCanvas.getCursors().addCursor(cursor);
                     }
                 }
