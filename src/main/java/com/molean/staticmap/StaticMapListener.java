@@ -127,7 +127,7 @@ public class StaticMapListener implements Listener {
         }
         itemMeta.setLore(Lists.newArrayList(
                 plugin.getConfig().getString("lore", "")
-                        .replaceAll("&([0-9A-Fa-fLMNKORlmnkor])", "§$1")
+                        .replaceAll("&([0-9A-Fa-fLMNKXORlmnkxor])", "§$1")
         ));
         MapUtils.updateStaticMap(itemMeta, colors, cursors);
         itemStack.setItemMeta(itemMeta);
@@ -168,30 +168,30 @@ public class StaticMapListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if (e.getClickedInventory() instanceof CartographyInventory) {
-            handleInv((CartographyInventory) e.getClickedInventory(), e.getCurrentItem(), e);
+        if (e.getDestination().getClass().getName().contains("Cartography")) {
+            handleInv(e.getClickedInventory(), e.getCurrentItem(), e);
         }
     }
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent e) {
-        if (e.getInventory() instanceof CartographyInventory) {
+        if (e.getDestination().getClass().getName().contains("Cartography")) {
             if (handleInv((CartographyInventory) e.getInventory(), e.getOldCursor(), e)) return;
             if (handleInv((CartographyInventory) e.getInventory(), e.getCursor(), e)) return;
             for (ItemStack item : e.getNewItems().values()) {
-                if (handleInv((CartographyInventory) e.getInventory(), item, e)) return;
+                if (handleInv(e.getInventory(), item, e)) return;
             }
         }
     }
 
     @EventHandler
     public void onInventoryMoveItem(InventoryMoveItemEvent e) {
-        if (e.getDestination() instanceof CartographyInventory) {
+        if (e.getDestination().getClass().getName().contains("Cartography")) {
             handleInv((CartographyInventory) e.getDestination(), e.getItem(), e);
         }
     }
 
-    public boolean handleInv(CartographyInventory inv, ItemStack item, Cancellable e) {
+    public boolean handleInv(Inventory inv, ItemStack item, Cancellable e) {
         if (item == null) return false;
         byte[] colors = DataSimplified.of(item).getAsBytes("colors");
         if (colors == null) return false;
