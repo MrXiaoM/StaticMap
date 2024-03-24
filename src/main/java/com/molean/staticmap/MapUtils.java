@@ -44,6 +44,7 @@ public class MapUtils {
         mapView.addRenderer(new MyMapRenderer() {
             @Override
             public void render(@NotNull MapView mapView, @NotNull MapCanvas mapCanvas, @NotNull Player player) {
+                mapCanvas.setCursors(new MapCursorCollection());
                 for (int i = 0; i < 128 * 128 && i < bytes.length; i++) {
                     int x = i % 128;
                     int y = i / 128;
