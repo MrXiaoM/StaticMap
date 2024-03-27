@@ -50,7 +50,7 @@ public class StaticMapListener implements Listener {
             if (colors != null) {
                 MapUtils.updateStaticMap((MapMeta) itemMeta, colors, cursors);
                 item.setItemMeta(itemMeta);
-                itemFrame.setItem(item);
+                Bukkit.getScheduler().runTask(plugin, () -> itemFrame.setItem(item));
             }
         }
     }
