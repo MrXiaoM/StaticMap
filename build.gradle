@@ -10,7 +10,7 @@ allprojects {
     repositories {
         maven { url "https://mirrors.huaweicloud.com/repository/maven" }
         maven { url "https://repo.papermc.io/repository/maven-public/" }
-        maven { url "https://mvn.lumine.io/repository/maven/" }
+        maven { url "https://repo.rosewooddev.io/repository/public/" }
         maven { url "https://repo.codemc.io/repository/maven-public/" }
         maven {
             name = 'spigotmc-repo'

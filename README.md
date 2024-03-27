@@ -21,4 +21,7 @@
 # 鸣谢
 
 + [StaticMap 原作者](https://github.com/KujouMolean/StaticMap) 插件底层逻辑
-+ [Lumine Studios](https://lumine.io/) 分发 Spigot NMS 依赖
+<!--
++ ~~[Lumine Studios](https://lumine.io/) 分发 Spigot NMS 依赖~~ 401 未授权，真的是泰裤辣！
+-->
++ [RoseWoodDev](https://repo.rosewooddev.io/repository/public/) 分发 Spigot NMS 依赖
