@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = 'com.molean'
-    version = '1.2.3'
+    version = '1.2.4'
 
     repositories {
         maven { url "https://mirrors.huaweicloud.com/repository/maven" }
