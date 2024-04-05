@@ -52,7 +52,8 @@ public class Version_1_18 implements IVersion {
             }
             return cursors;
         } catch (ReflectiveOperationException | NullPointerException e) {
-            throw new RuntimeException(e);
+            IVersion.warn(e);
+            return new ArrayList<>();
         }
     }
 }
