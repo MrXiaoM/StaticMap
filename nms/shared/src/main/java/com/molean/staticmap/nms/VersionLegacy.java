@@ -9,7 +9,6 @@ import org.bukkit.plugin.Plugin;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +36,6 @@ public class VersionLegacy implements IVersion {
     @SuppressWarnings({"unchecked"})
     public List<MapCursor> getCursors(Player player, MapRenderer renderer) {
         try {
-            Class<?> classCraftChatMessage = Class.forName(Bukkit.getServer().getClass().getName().replace(".CraftServer", ".util.CraftChatMessage"));
-            Method fromComponent = null;
             Field worldMapField = renderer.getClass().getDeclaredField("worldMap");
             worldMapField.setAccessible(true);
             Field deco = worldMapField.getType().getDeclaredField("decorations");
@@ -85,10 +82,7 @@ public class VersionLegacy implements IVersion {
                 Object type = fieldType.get(decoration);
                 byte typeByte = (byte) methodTypeByte.invoke(type);
                 Object name = methodName.invoke(decoration);
-                if (fromComponent == null) {
-                    fromComponent = classCraftChatMessage.getDeclaredMethod("fromComponent", name.getClass());
-                }
-                name = fromComponent.invoke(null, name);
+                name = fromComponent(name);
                 cursors.add(new MapCursor(
                         x, y,
                         (byte) (rotation & 15),
@@ -98,15 +92,8 @@ public class VersionLegacy implements IVersion {
                 ));
             }
             return cursors;
-        } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            Plugin plugin = Bukkit.getPluginManager().getPlugin("StaticMap");
-            if (plugin != null) {
-                StringWriter sw = new StringWriter();
-                try (PrintWriter pw = new PrintWriter(sw)) {
-                    e.printStackTrace(pw);
-                }
-                plugin.getLogger().warning(sw.toString());
-            }
+        } catch (ReflectiveOperationException | NullPointerException e) {
+            IVersion.warn(e);
         }
         return new ArrayList<>();
     }

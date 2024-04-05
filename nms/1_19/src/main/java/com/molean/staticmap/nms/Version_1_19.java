@@ -3,7 +3,6 @@ package com.molean.staticmap.nms;
 import net.minecraft.world.level.saveddata.maps.MapIcon;
 import net.minecraft.world.level.saveddata.maps.WorldMap;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_19_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
@@ -48,11 +47,11 @@ public class Version_1_19 implements IVersion {
                         (byte) (decoration.e() & 15),
                         decoration.b().a(),
                         true,
-                        CraftChatMessage.fromComponent(decoration.g())
+                        fromComponent(decoration.g())
                 ));
             }
             return cursors;
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (ReflectiveOperationException | NullPointerException e) {
             throw new RuntimeException(e);
         }
     }

@@ -10,14 +10,11 @@ import java.util.List;
 
 public class VersionManager {
     private static IVersion nms = null;
-    public static String getVersion() {
-        return Bukkit.getServer().getClass().getPackage().getName().substring(23);
-    }
     public enum Status {
         OK, LEGACY, LEGACY_OLD, INVALID
     }
     public static Status init() {
-        String ver = getVersion();
+        String ver = IVersion.getNMSVersion();
         if (matchVersions(ver, "v1_20")) {
             nms = new Version_1_20();
             return Status.OK;

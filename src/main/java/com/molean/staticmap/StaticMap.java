@@ -1,5 +1,6 @@
 package com.molean.staticmap;
 
+import com.molean.staticmap.nms.IVersion;
 import com.molean.staticmap.nms.VersionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -15,7 +16,7 @@ public final class StaticMap extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("当前服务器版本: " + VersionManager.getVersion());
+        getLogger().info("当前服务器版本: " + IVersion.getNMSVersion());
         VersionManager.Status init = VersionManager.init();
         if (!init.equals(VersionManager.Status.INVALID)) {
             getLogger().info("插件支持当前服务器版本");
