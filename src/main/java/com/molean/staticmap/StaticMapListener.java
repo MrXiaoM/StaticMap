@@ -34,9 +34,7 @@ public class StaticMapListener implements Listener {
     @EventHandler
     public void onEntityAddToWorld(EntityAddToWorldEvent event) {
         Entity entity = event.getEntity();
-        if (!entity.getType().equals(EntityType.ITEM_FRAME)) {
-            return;
-        }
+        if (!(entity instanceof ItemFrame)) return;
         ItemFrame itemFrame = (ItemFrame) entity;
         ItemStack item = itemFrame.getItem();
         if (!item.getType().equals(mapMaterial)) {
