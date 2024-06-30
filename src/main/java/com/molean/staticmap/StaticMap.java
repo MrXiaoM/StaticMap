@@ -66,4 +66,13 @@ public final class StaticMap extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
     }
+
+    public static boolean isClassPresent(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException ignored) {
+            return false;
+        }
+    }
 }

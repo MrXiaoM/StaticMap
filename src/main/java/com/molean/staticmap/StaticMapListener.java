@@ -1,6 +1,5 @@
 package com.molean.staticmap;
 
-import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -29,27 +28,11 @@ public class StaticMapListener implements Listener {
     public StaticMapListener(StaticMap plugin, boolean legacy) {
         Bukkit.getPluginManager().registerEvents(this, this.plugin = plugin);
         mapMaterial = legacy ? Material.MAP : Material.FILLED_MAP;
-    }
-
-    @EventHandler
-    public void onEntityAddToWorld(EntityAddToWorldEvent event) {
-        Entity entity = event.getEntity();
-        if (!(entity instanceof ItemFrame)) return;
-        ItemFrame itemFrame = (ItemFrame) entity;
-        ItemStack item = itemFrame.getItem();
-        if (!item.getType().equals(mapMaterial)) {
-            return;
-        }
-        DataSimplified data = DataSimplified.of(item);
-        if (data.has("colors")) {
-            ItemMeta itemMeta = getItemMeta(item);
-            byte[] colors = data.getAsBytes("colors");
-            List<MapCursor> cursors = fromBytes(data.getAsBytes("cursors"));
-            if (colors != null) {
-                MapUtils.updateStaticMap((MapMeta) itemMeta, colors, cursors);
-                item.setItemMeta(itemMeta);
-                Bukkit.getScheduler().runTask(plugin, () -> itemFrame.setItem(item));
-            }
+        if (StaticMap.isClassPresent("com.destroystokyo.paper.event.entity.EntityAddToWorldEvent")) {
+            Bukkit.getPluginManager().registerEvents(new StaticMapListenerPaper(plugin, legacy), plugin);
+        } else {
+            plugin.getLogger().warning("当前非 Paper 服务端，正在使用备用方案，该方案未经测试，物品展示框上的跨服地图画可能会在区块重新加载后失效!");
+            Bukkit.getPluginManager().registerEvents(new StaticMapListenerSpigot(plugin, legacy), plugin);
         }
     }
 
@@ -123,9 +106,10 @@ public class StaticMapListener implements Listener {
         if (renameText != null && !renameText.isEmpty()) {
             itemMeta.setDisplayName(renameText);
         }
+
+        String loreLine = plugin.getConfig().getString("lore", "");
         itemMeta.setLore(Lists.newArrayList(
-                plugin.getConfig().getString("lore", "")
-                        .replaceAll("&([0-9A-Fa-fLMNKXORlmnkxor])", "§$1")
+                (loreLine == null ? "" : loreLine).replaceAll("&([0-9A-Fa-fLMNKXORlmnkxor])", "§$1")
         ));
         MapUtils.updateStaticMap(itemMeta, colors, cursors);
         itemStack.setItemMeta(itemMeta);
