@@ -41,13 +41,15 @@ public class Version_1_17 implements IVersion {
                 Player other = Bukkit.getPlayerExact(key);
                 if ((other != null && !player.canSee(other))) continue;
                 MapIcon decoration = mapIconMap.get(key);
+                byte type = decoration.getType().a();
+                byte direction = (byte) (decoration.getRotation() & 15);
                 cursors.add(new MapCursor(
-                        decoration.getX(),
-                        decoration.getY(),
-                        (byte) (decoration.getRotation() & 15),
-                        decoration.getType().a(),
-                        true,
-                        fromComponent(decoration.getName())
+                        decoration.getX(), // x
+                        decoration.getY(), // y
+                        direction, // direction
+                        type, // type
+                        true, // visible
+                        fromComponent(decoration.getName()) // caption
                 ));
             }
             return cursors;
