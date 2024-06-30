@@ -20,7 +20,7 @@ public interface IVersion extends Listener {
 
     @SuppressWarnings({"unchecked"})
     default <T> T fromComponent(Object component) throws ReflectiveOperationException {
-        if (component == null) throw new NullPointerException("component == null");
+        if (component == null) return null;
         Class<?> clazz = Class.forName("org.bukkit.craftbukkit." + getNMSVersion() + ".util.CraftChatMessage");
         Method fromComponent = clazz.getDeclaredMethod("fromComponent", component.getClass());
         return (T)fromComponent.invoke(null, component);
