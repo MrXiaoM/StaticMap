@@ -1,8 +1,6 @@
 name: StaticMap
 version: '${version}'
 main: com.molean.staticmap.StaticMap
-softdepend:
-  - NBTAPI
 api-version: 1.13
 permissions:
   staticmap.use:
