@@ -25,10 +25,8 @@ public final class StaticMap extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        if (!DataSimplified.isPDHAvailable() && !Bukkit.getPluginManager().isPluginEnabled("NBTAPI")) {
-            getLogger().warning("当前服务端不支持 Persistence 特性，请安装 item-nbt-api-plugin 插件");
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
+        if (DataSimplified.isPDHNotAvailable()) {
+            getLogger().info("当前服务端不支持 Persistence 特性，将使用 item-nbt-api 储存数据");
         }
         VersionManager.registerListener(this);
         new StaticMapListener(this, init.equals(VersionManager.Status.LEGACY_OLD));

@@ -121,7 +121,7 @@ public class StaticMapListener implements Listener {
                 data.setBytes("cursors", bytes);
             }
         }
-        if (!DataSimplified.isPDHAvailable()) {
+        if (DataSimplified.isPDHNotAvailable()) {
             itemStack = data.nbtToItemStack();
         }
         else {

@@ -27,7 +27,10 @@ allprojects {
 }
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.14-R0.1-SNAPSHOT")
-    compileOnly("de.tr7zw:item-nbt-api-plugin:2.11.1")
+
+    // 仅用于不支持 PersistentDataHolder 特性的版本 (1.13或以下)，无需升级到最新版
+    implementation("de.tr7zw:item-nbt-api:2.11.1") { isTransitive = false }
+
     implementation("org.jetbrains:annotations:23.0.0")
     for (proj in rootProject.project(":nms").subprojects) {
         implementation(proj)
@@ -48,7 +51,8 @@ tasks {
         archiveClassifier.set("")
         mapOf(
             "org.intellij.lang.annotations" to "annotations.intellij",
-            "org.jetbrains.annotations" to "annotations.jetbrains"
+            "org.jetbrains.annotations" to "annotations.jetbrains",
+            "de.tr7zw.changeme.nbtapi" to "nbtapi",
         ).forEach{ (original, target) ->
             relocate(original, "com.molean.staticmap.utils.$target")
         }

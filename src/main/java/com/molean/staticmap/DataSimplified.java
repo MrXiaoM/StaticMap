@@ -1,8 +1,8 @@
 package com.molean.staticmap;
 
-import de.tr7zw.nbtapi.NBTCompound;
-import de.tr7zw.nbtapi.NBTContainer;
-import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTContainer;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.inventory.ItemStack;
 
 public class DataSimplified {
@@ -15,8 +15,8 @@ public class DataSimplified {
             isPDHAvailable = false;
         }
     }
-    public static boolean isPDHAvailable() {
-        return isPDHAvailable;
+    public static boolean isPDHNotAvailable() {
+        return !isPDHAvailable;
     }
     final PDHSimplified pdh;
     final NBTContainer nbt;
@@ -26,8 +26,8 @@ public class DataSimplified {
             pdh = PDHSimplified.of(item.getItemMeta());
             nbt = null;
         } else {
-            nbt = NBTItem.convertItemtoNBT(item);
             pdh = null;
+            nbt = NBTItem.convertItemtoNBT(item);
         }
     }
 
