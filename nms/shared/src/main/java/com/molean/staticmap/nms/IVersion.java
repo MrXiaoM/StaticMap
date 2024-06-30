@@ -9,7 +9,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -24,7 +23,9 @@ public interface IVersion extends Listener {
         Class<?> clazz = Class.forName("org.bukkit.craftbukkit." + getNMSVersion() + ".util.CraftChatMessage");
         Method fromComponent = null;
         for (Method method : clazz.getDeclaredMethods()) {
-            if (method.getName().equals("fromComponent") && method.getParameterCount() == 1) {
+            if (method.getName().equals("fromComponent")
+                    && method.getParameterCount() == 1
+                    && method.getParameterTypes()[0].isInstance(component)) {
                 fromComponent = method;
             }
         }
