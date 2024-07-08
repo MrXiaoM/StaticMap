@@ -11,10 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCursor;
@@ -149,6 +146,26 @@ public class StaticMapListener implements Listener {
                     viewer.sendMessage("§7不能复制跨服地图画");
                 }
                 break;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInventoryOpen(InventoryOpenEvent e) {
+        if (e.isCancelled()) return;
+        Inventory inv = e.getInventory();
+        if (inv.getHolder() instanceof BlockInventoryHolder) {
+            for (int i = 0; i < inv.getSize(); i++) {
+                ItemStack itemStack = inv.getItem(i);
+                if (itemStack == null || !itemStack.getType().equals(mapMaterial)) {
+                    continue;
+                }
+                MapMeta itemMeta = getItemMeta(itemStack);
+                DataSimplified data = DataSimplified.of(itemStack);
+                byte[] colors = data.getAsBytes("colors");
+                List<MapCursor> cursors = fromBytes(data.getAsBytes("cursors"));
+                MapUtils.updateStaticMap(itemMeta, colors, cursors);
+                itemStack.setItemMeta(itemMeta);
             }
         }
     }
