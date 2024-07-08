@@ -1,5 +1,7 @@
 # StaticMap
 
+[![Releases](https://img.shields.io/github/downloads/MrXiaoM/StaticMap/total)](https://github.com/MrXiaoM/StaticMap/releases)
+
 地图画跨服插件重制版。
 
 支持 `1.8-1.21`，需要 Paper 服务端。非 Paper 服务端运行本插件，物品展示框上的跨服地图画可能会在区块重新加载后无法正常加载。
