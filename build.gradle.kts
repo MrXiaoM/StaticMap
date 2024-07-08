@@ -7,7 +7,7 @@ val targetJavaVersion = 8
 
 allprojects {
     group = "com.molean"
-    version = "1.2.5"
+    version = "1.2.6"
 
     repositories {
         maven("https://mirrors.huaweicloud.com/repository/maven")
