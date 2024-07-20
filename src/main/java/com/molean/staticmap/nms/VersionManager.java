@@ -15,11 +15,11 @@ public class VersionManager {
     }
     public static Status init() {
         String ver = IVersion.getNMSVersion();
-        if (matchVersions(ver, "v1_21")) {
+        if (matchVersions(ver, "v1_21", "1.21")) {
             nms = new Version_1_21();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_20_R4")) {
+        if (matchVersions(ver, "v1_20_R4", "1.20.6", "1.20.5")) {
             nms = new Version_1_20_6();
             return Status.OK;
         }

@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public interface IVersion extends Listener {
     byte[] getColors(MapRenderer renderer);
@@ -20,7 +22,11 @@ public interface IVersion extends Listener {
     @SuppressWarnings({"unchecked"})
     default <T> T fromComponent(Object component) throws ReflectiveOperationException {
         if (component == null) return null;
-        Class<?> clazz = Class.forName("org.bukkit.craftbukkit." + getNMSVersion() + ".util.CraftChatMessage");
+        String nms = getNMSVersion();
+
+        Class<?> clazz = nms.contains("_R")
+                ? Class.forName("org.bukkit.craftbukkit." + nms + ".util.CraftChatMessage")
+                : Class.forName("org.bukkit.craftbukkit.util.CraftChatMessage");
         Method fromComponent = null;
         for (Method method : clazz.getDeclaredMethods()) {
             if (method.getName().equals("fromComponent")
@@ -32,7 +38,17 @@ public interface IVersion extends Listener {
         return fromComponent == null ? null : (T)fromComponent.invoke(null, component);
     }
 
+    static String getDisplayVersion() {
+        String nms = getNMSVersion();
+        return nms.isEmpty() ? Bukkit.getVersion() : nms;
+    }
+
     static String getNMSVersion() {
+        String name = Bukkit.getServer().getClass().getPackage().getName();
+        if (name.length() < 28) {
+            Matcher m = Pattern.compile("MC: (1\\.2[0-9](\\.[0-9])?)").matcher(Bukkit.getVersion());
+            return m.find() && m.groupCount() > 0 ? m.group(1) : "";
+        }
         return Bukkit.getServer().getClass().getPackage().getName().substring(23);
     }
 
