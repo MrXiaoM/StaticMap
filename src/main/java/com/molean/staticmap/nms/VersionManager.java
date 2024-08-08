@@ -2,6 +2,7 @@ package com.molean.staticmap.nms;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -56,7 +57,9 @@ public class VersionManager {
 
     public static void registerListener(JavaPlugin plugin) {
         if (nms != null) {
-            Bukkit.getPluginManager().registerEvents(nms, plugin);
+            Listener listener = nms.extraListener();
+            if (listener == null) return;
+            Bukkit.getPluginManager().registerEvents(listener, plugin);
         }
     }
 

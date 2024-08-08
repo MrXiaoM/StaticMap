@@ -14,10 +14,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public interface IVersion extends Listener {
+public interface IVersion {
     byte[] getColors(MapRenderer renderer);
 
     List<MapCursor> getCursors(Player player, MapRenderer renderer);
+
+    default Listener extraListener() {
+        return null;
+    }
 
     @SuppressWarnings({"unchecked"})
     default <T> T fromComponent(Object component) throws ReflectiveOperationException {
