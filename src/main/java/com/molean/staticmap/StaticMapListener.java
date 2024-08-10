@@ -98,7 +98,8 @@ public class StaticMapListener implements Listener {
             return;
         }
         ItemStack itemStack = new ItemStack(mapMaterial);
-        MapMeta itemMeta = getItemMeta(itemStack);
+        MapMeta oldMeta = getItemMeta(firstItem);
+        MapMeta itemMeta = oldMeta.clone();
 
         MapMeta mapMeta = getItemMeta(firstItem);
         byte[] colors = MapUtils.getColors(mapMeta);
