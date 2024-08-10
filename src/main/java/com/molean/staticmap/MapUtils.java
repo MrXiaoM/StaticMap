@@ -26,8 +26,9 @@ public class MapUtils {
         if (bytes == null) {
             return;
         }
-        try {
-            MapRenderer mapRenderer = Objects.requireNonNull(mapMeta.getMapView()).getRenderers().get(0);
+        MapView mapView = mapMeta.hasMapView() ? mapMeta.getMapView() : null;
+        if (mapView != null) try {
+            MapRenderer mapRenderer = mapView.getRenderers().get(0);
             if (mapRenderer instanceof MyMapRenderer) {
                 if (((MyMapRenderer) mapRenderer).hashCode == Arrays.hashCode(bytes)) {
                     return;
@@ -37,7 +38,7 @@ public class MapUtils {
 
         }
 
-        MapView mapView = mapMeta.getMapView(); // 如果地图有 MapView 就用原来的，不要新建了
+        // 如果地图有 MapView 就用原来的，不要新建了
         if (mapView == null) {
             mapView = Bukkit.createMap(Bukkit.getWorlds().get(0));
         }
