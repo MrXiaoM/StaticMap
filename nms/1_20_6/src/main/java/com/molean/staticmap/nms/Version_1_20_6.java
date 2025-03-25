@@ -7,7 +7,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,21 +20,38 @@ import java.util.Map;
  */
 public class Version_1_20_6 implements IVersion {
     @Override
-    public byte[] getColors(MapRenderer renderer) {
+    public MapView cloneMapView(MapView view) {
+        Class<?> type = view.getClass();
         try {
-            Field worldMapField = renderer.getClass().getDeclaredField("worldMap");
+            Field worldMapField = type.getDeclaredField("worldMap");
+            worldMapField.setAccessible(true);
+            WorldMap worldMap = (WorldMap) worldMapField.get(view);
+            Constructor<?> constructor = type.getDeclaredConstructor(WorldMap.class);
+            constructor.setAccessible(true);
+            return (MapView) constructor.newInstance(worldMap);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(type.getName(), e);
+        }
+    }
+
+    @Override
+    public byte[] getColors(MapRenderer renderer) {
+        Class<?> type = renderer.getClass();
+        try {
+            Field worldMapField = type.getDeclaredField("worldMap");
             worldMapField.setAccessible(true);
             WorldMap worldMap = (WorldMap) worldMapField.get(renderer);
             return worldMap.g;
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(type.getName(), e);
         }
     }
 
     @Override
     public List<MapCursor> getCursors(Player player, MapRenderer renderer) {
+        Class<?> type = renderer.getClass();
         try {
-            Field worldMapField = renderer.getClass().getDeclaredField("worldMap");
+            Field worldMapField = type.getDeclaredField("worldMap");
             worldMapField.setAccessible(true);
             WorldMap worldMap = (WorldMap) worldMapField.get(renderer);
             Map<String, MapIcon> mapIconMap = worldMap.q;
@@ -41,22 +60,22 @@ public class Version_1_20_6 implements IVersion {
                 Player other = Bukkit.getPlayerExact(key);
                 if ((other != null && !player.canSee(other))) continue;
                 MapIcon decoration = mapIconMap.get(key);
-                MapCursor.Type type = getType(decoration.c().a().b());
-                if (type == null) continue;
+                MapCursor.Type iconType = getType(decoration.c().a().b());
+                if (iconType == null) continue;
                 // MapIcon 内已有 (byte) (var3 & 15)，无需额外处理
                 byte direction = decoration.f();
                 cursors.add(new MapCursor(
                         decoration.d(), // x
                         decoration.e(), // y
                         direction, // direction
-                        type, // type
+                        iconType, // type
                         true, // visible
                         fromComponent(decoration.g().orElse(null)) // caption
                 ));
             }
             return cursors;
-        } catch (ReflectiveOperationException | NullPointerException e) {
-            IVersion.warn(e);
+        } catch (ReflectiveOperationException e) {
+            IVersion.warn(new RuntimeException(type.getName(), e));
             return new ArrayList<>();
         }
     }

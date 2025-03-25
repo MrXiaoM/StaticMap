@@ -64,6 +64,8 @@ public class MapUtils {
         // 如果地图有 MapView 就用原来的，不要新建了
         if (mapView == null) {
             mapView = Bukkit.createMap(Bukkit.getWorlds().get(0));
+        } else {
+            mapView = VersionManager.clone(mapView);
         }
         while (!mapView.getRenderers().isEmpty()) {
             mapView.removeRenderer(mapView.getRenderers().get(0));

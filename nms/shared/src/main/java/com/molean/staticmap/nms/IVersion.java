@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
 
 import java.io.PrintWriter;
@@ -15,6 +16,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface IVersion {
+    MapView cloneMapView(MapView view);
+
     byte[] getColors(MapRenderer renderer);
 
     List<MapCursor> getCursors(Player player, MapRenderer renderer);
@@ -40,6 +43,25 @@ public interface IVersion {
             }
         }
         return fromComponent == null ? null : (T)fromComponent.invoke(null, component);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    default <T> T toComponent(String component) throws ReflectiveOperationException {
+        if (component == null) return null;
+        String nms = getNMSVersion();
+
+        Class<?> clazz = nms.contains("_R")
+                ? Class.forName("org.bukkit.craftbukkit." + nms + ".util.CraftChatMessage")
+                : Class.forName("org.bukkit.craftbukkit.util.CraftChatMessage");
+        Method toComponent = null;
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.getName().equals("fromString")
+                    && method.getParameterCount() == 1
+                    && method.getParameterTypes()[0].equals(String.class)) {
+                toComponent = method;
+            }
+        }
+        return toComponent == null ? null : (T)toComponent.invoke(null, component);
     }
 
     static String getDisplayVersion() {

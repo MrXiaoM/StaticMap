@@ -70,6 +70,10 @@ public class VersionManager {
         return false;
     }
 
+    public static MapView clone(MapView view) {
+        return nms.cloneMapView(view);
+    }
+
     public static byte[] getColors(MapRenderer renderer) {
         return nms.getColors(renderer);
     }

@@ -4,10 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.map.MapView;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,23 +19,40 @@ import java.util.Map;
 @SuppressWarnings({"deprecation"})
 public class VersionLegacy implements IVersion {
     @Override
-    public byte[] getColors(MapRenderer renderer) {
+    public MapView cloneMapView(MapView view) {
+        Class<?> type = view.getClass();
         try {
-            Field worldMapField = renderer.getClass().getDeclaredField("worldMap");
+            Field worldMapField = type.getDeclaredField("worldMap");
+            worldMapField.setAccessible(true);
+            Object worldMap = worldMapField.get(view);
+            Constructor<?> constructor = type.getDeclaredConstructor(worldMap.getClass());
+            constructor.setAccessible(true);
+            return (MapView) constructor.newInstance(worldMap);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(type.getName(), e);
+        }
+    }
+
+    @Override
+    public byte[] getColors(MapRenderer renderer) {
+        Class<?> type = renderer.getClass();
+        try {
+            Field worldMapField = type.getDeclaredField("worldMap");
             worldMapField.setAccessible(true);
             Field colors = worldMapField.getType().getDeclaredField("colors");
             Object worldMapInst = worldMapField.get(renderer);
             return (byte[]) colors.get(worldMapInst);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(type.getName(), e);
         }
     }
 
     @Override
     @SuppressWarnings({"unchecked"})
     public List<MapCursor> getCursors(Player player, MapRenderer renderer) {
+        Class<?> type = renderer.getClass();
         try {
-            Field worldMapField = renderer.getClass().getDeclaredField("worldMap");
+            Field worldMapField = type.getDeclaredField("worldMap");
             worldMapField.setAccessible(true);
             Field deco = worldMapField.getType().getDeclaredField("decorations");
             Object worldMap = worldMapField.get(renderer);
@@ -79,8 +95,8 @@ public class VersionLegacy implements IVersion {
                 byte x = fieldX.getByte(decoration);
                 byte y = fieldY.getByte(decoration);
                 byte rotation = fieldRotation.getByte(decoration);
-                Object type = fieldType.get(decoration);
-                byte typeByte = (byte) methodTypeByte.invoke(type);
+                Object iconType = fieldType.get(decoration);
+                byte typeByte = (byte) methodTypeByte.invoke(iconType);
                 Object name = methodName.invoke(decoration);
                 name = fromComponent(name);
                 cursors.add(new MapCursor(
@@ -92,9 +108,9 @@ public class VersionLegacy implements IVersion {
                 ));
             }
             return cursors;
-        } catch (ReflectiveOperationException | NullPointerException e) {
-            IVersion.warn(e);
+        } catch (ReflectiveOperationException e) {
+            IVersion.warn(new RuntimeException(type.getName(), e));
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
     }
 }
