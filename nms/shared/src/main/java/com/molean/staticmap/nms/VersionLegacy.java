@@ -4,9 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,20 +16,6 @@ import java.util.Map;
  */
 @SuppressWarnings({"deprecation"})
 public class VersionLegacy implements IVersion {
-    @Override
-    public MapView cloneMapView(MapView view) {
-        Class<?> type = view.getClass();
-        try {
-            Field worldMapField = type.getDeclaredField("worldMap");
-            worldMapField.setAccessible(true);
-            Object worldMap = worldMapField.get(view);
-            Constructor<?> constructor = type.getDeclaredConstructor(worldMap.getClass());
-            constructor.setAccessible(true);
-            return (MapView) constructor.newInstance(worldMap);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(type.getName(), e);
-        }
-    }
 
     @Override
     public byte[] getColors(MapRenderer renderer) {

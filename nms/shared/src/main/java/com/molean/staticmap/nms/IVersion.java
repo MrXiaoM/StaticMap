@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
 
 import java.io.PrintWriter;
@@ -16,7 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface IVersion {
-    MapView cloneMapView(MapView view);
 
     byte[] getColors(MapRenderer renderer);
 
