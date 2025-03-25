@@ -13,6 +13,7 @@ import org.bukkit.map.MapCursor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,8 +29,8 @@ public final class StaticMap extends JavaPlugin {
 
     final OutdateConverter outdateConverter = new OutdateConverter(this);
     private StaticMapListener listener;
-    private List<String> mapLore;
-    private Integer mapCost;
+    private final List<String> mapLore = new ArrayList<>();
+    private Integer mapCost = 20;
     @Override
     public void onEnable() {
         getLogger().info("当前服务器版本: " + IVersion.getDisplayVersion());
