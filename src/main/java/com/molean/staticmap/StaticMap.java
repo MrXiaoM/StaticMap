@@ -11,9 +11,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.List;
 
 public final class StaticMap extends JavaPlugin {
 
+    List<String> mapLore;
+    Integer mapCost;
     @Override
     public void onEnable() {
         getLogger().info("当前服务器版本: " + IVersion.getDisplayVersion());
@@ -34,6 +37,14 @@ public final class StaticMap extends JavaPlugin {
         this.reloadConfig();
     }
 
+    public List<String> getMapLore() {
+        return mapLore;
+    }
+
+    public Integer getMapCost() {
+        return mapCost;
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender.isOp()) {
@@ -49,6 +60,18 @@ public final class StaticMap extends JavaPlugin {
         super.reloadConfig();
         FileConfiguration config = getConfig();
 
+        mapLore.clear();
+        if (config.isList("lore")) {
+            for (String loreLine : config.getStringList("lore")) {
+                mapLore.add(loreLine.replaceAll("&([0-9A-Fa-fLMNKXORlmnkxor])", "§$1"));
+            }
+        } else {
+            String loreLine = config.getString("lore");
+            if (loreLine != null) {
+                mapLore.add(loreLine.replaceAll("&([0-9A-Fa-fLMNKXORlmnkxor])", "§$1"));
+            }
+        }
+        mapCost = config.contains("cost") ? config.getInt("cost") : null;
         MapUtils.hiddenCursors.clear();
         for (String s : config.getStringList("hidden-cursors")) {
             if (s.equals("*")) {
