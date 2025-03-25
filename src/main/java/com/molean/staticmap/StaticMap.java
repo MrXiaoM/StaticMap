@@ -2,6 +2,7 @@ package com.molean.staticmap;
 
 import com.molean.staticmap.nms.IVersion;
 import com.molean.staticmap.nms.VersionManager;
+import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,6 +15,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class StaticMap extends JavaPlugin {
+
+    @Override
+    public void onLoad() {
+        MinecraftVersion.replaceLogger(getLogger());
+        MinecraftVersion.disableUpdateCheck();
+        MinecraftVersion.disableBStats();
+        MinecraftVersion.getVersion();
+    }
 
     List<String> mapLore;
     Integer mapCost;

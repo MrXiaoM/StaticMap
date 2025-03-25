@@ -25,13 +25,14 @@ allprojects {
         targetCompatibility = targetJavaVersion.toString()
     }
 }
+
+@Suppress("VulnerableLibrariesLocal")
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.14-R0.1-SNAPSHOT")
 
-    // 仅用于不支持 PersistentDataHolder 特性的版本 (1.13或以下)，无需升级到最新版
-    implementation("de.tr7zw:item-nbt-api:2.11.1") { isTransitive = false }
+    implementation("de.tr7zw:item-nbt-api:2.14.1")
 
-    implementation("org.jetbrains:annotations:23.0.0")
+    implementation("org.jetbrains:annotations:24.0.0")
     for (proj in rootProject.project(":nms").subprojects) {
         implementation(proj)
     }
