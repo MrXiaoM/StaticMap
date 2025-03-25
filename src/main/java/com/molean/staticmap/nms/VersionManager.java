@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
@@ -24,7 +25,11 @@ public class VersionManager {
             nms = new Version_1_20_6();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_20_R2", "v1_20_R3")) {
+        if (matchVersions(ver, "v1_20_R3")) {
+            nms = new Version_1_20_4();
+            return Status.OK;
+        }
+        if (matchVersions(ver, "v1_20_R2")) {
             nms = new Version_1_20_2();
             return Status.OK;
         }
