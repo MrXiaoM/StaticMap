@@ -1,6 +1,5 @@
 package com.molean.staticmap;
 
-
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -16,8 +15,34 @@ import java.util.*;
 @SuppressWarnings({"deprecation"})
 public class MapUtils {
 
-    abstract static class MyMapRenderer extends MapRenderer {
-        public int hashCode = 0;
+    static class MyMapRenderer extends MapRenderer {
+        public final int hashCode;
+        public final byte[] colors;
+        public final List<MapCursor> cursors;
+        private final MapCursorCollection realCursors;
+        private MyMapRenderer(byte[] colors, List<MapCursor> cursors) {
+            this.colors = colors;
+            this.hashCode = Arrays.hashCode(colors);
+            this.cursors = cursors;
+            this.realCursors = new MapCursorCollection();
+            if (cursors != null && !cursors.isEmpty()) {
+                for (MapCursor cursor : cursors) {
+                    if (hiddenCursors.contains(cursor.getType())) continue;
+                    this.realCursors.addCursor(cursor);
+                }
+            }
+        }
+
+        @Override
+        public void render(@NotNull MapView mapView, @NotNull MapCanvas mapCanvas, @NotNull Player player) {
+            mapCanvas.setCursors(this.realCursors);
+            for (int i = 0; i < 128 * 128 && i < colors.length; i++) {
+                int x = i % 128;
+                int y = i / 128;
+                byte color = colors[i];
+                mapCanvas.setPixel(x, y, color);
+            }
+        }
     }
 
     protected static final Set<MapCursor.Type> hiddenCursors = new HashSet<>();
@@ -34,9 +59,7 @@ public class MapUtils {
                     return;
                 }
             }
-        } catch (Exception ignored) {
-
-        }
+        } catch (Exception ignored) {}
 
         // 如果地图有 MapView 就用原来的，不要新建了
         if (mapView == null) {
@@ -45,25 +68,7 @@ public class MapUtils {
         while (!mapView.getRenderers().isEmpty()) {
             mapView.removeRenderer(mapView.getRenderers().get(0));
         }
-        mapView.addRenderer(new MyMapRenderer() {
-            @Override
-            public void render(@NotNull MapView mapView, @NotNull MapCanvas mapCanvas, @NotNull Player player) {
-                mapCanvas.setCursors(new MapCursorCollection());
-                for (int i = 0; i < 128 * 128 && i < bytes.length; i++) {
-                    int x = i % 128;
-                    int y = i / 128;
-                    byte color = bytes[i];
-                    mapCanvas.setPixel(x, y, color);
-                }
-                if (cursors != null && !cursors.isEmpty()) {
-                    for (MapCursor cursor : cursors) {
-                        if (hiddenCursors.contains(cursor.getType())) continue;
-                        mapCanvas.getCursors().addCursor(cursor);
-                    }
-                }
-                hashCode = Arrays.hashCode(bytes);
-            }
-        });
+        mapView.addRenderer(new MyMapRenderer(bytes, cursors));
         mapMeta.setMapView(mapView);
     }
 
