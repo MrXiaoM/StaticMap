@@ -1,15 +1,13 @@
 package com.molean.staticmap;
 
+import com.google.common.collect.Iterables;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.NBTType;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -20,7 +18,10 @@ import org.bukkit.map.MapCursor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static com.molean.staticmap.MapUtils.fromBytes;
@@ -32,6 +33,7 @@ public class StaticMapListener implements Listener {
     public static final String FLAG = "staticmap_flag";
     private final StaticMap plugin;
     private final Material mapMaterial;
+    private final Set<UUID> preparing = new HashSet<>();
     public StaticMapListener(StaticMap plugin, boolean legacy) {
         Bukkit.getPluginManager().registerEvents(this, this.plugin = plugin);
         mapMaterial = legacy ? Material.MAP : Material.FILLED_MAP;
@@ -56,30 +58,32 @@ public class StaticMapListener implements Listener {
         }
     }
 
-    public void checkMapUpdate(ItemStack item) {
-        checkMapUpdate(item, null);
-    }
     public void checkMapUpdate(ItemStack item, Consumer<ItemStack> setItem) {
         if (isNotMap(item)) return;
-        NBT.get(item, nbt -> {
-            MapMeta itemMeta = getItemMeta(item);
+        byte[][] pair = NBT.get(item, nbt -> {
             byte[] colors = bytes(nbt, COLORS);
-            List<MapCursor> cursors = fromBytes(bytes(nbt, CURSORS));
-            MapUtils.updateStaticMap(itemMeta, colors, cursors);
-            item.setItemMeta(itemMeta);
-            if (setItem != null) {
-                setItem.accept(item);
-            }
+            byte[] cursors = bytes(nbt, CURSORS);
+            return new byte[][] { colors, cursors };
         });
+        byte[] colors = pair[0];
+        List<MapCursor> cursors = fromBytes(pair[1]);
+        MapMeta itemMeta = getItemMeta(item);
+        MapUtils.updateStaticMap(itemMeta, colors, cursors);
+        item.setItemMeta(itemMeta);
+        if (setItem != null) {
+            setItem.accept(item);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        preparing.remove(player.getUniqueId());
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             PlayerInventory inv = player.getInventory();
             for (int i = 0; i < inv.getSize(); i++) {
-                checkMapUpdate(inv.getItem(i));
+                final int index = i;
+                checkMapUpdate(inv.getItem(index), item -> inv.setItem(index, item));
             }
         }, 1L);
     }
@@ -88,52 +92,46 @@ public class StaticMapListener implements Listener {
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         int newSlot = event.getNewSlot();
         PlayerInventory inv = event.getPlayer().getInventory();
-        checkMapUpdate(inv.getItem(newSlot));
+        checkMapUpdate(inv.getItem(newSlot), item -> inv.setItem(newSlot, item));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPrepareAnvil(PrepareAnvilEvent event) {
+        Player player = (Player) Iterables.find(event.getViewers(), it -> it instanceof Player, null);
+        if (player == null || !player.hasPermission("staticmap.use")) return;
+        UUID uuid = player.getUniqueId();
         AnvilInventory inv = event.getInventory();
+        if (preparing.contains(uuid)) return;
 
         ItemStack firstItem = inv.getItem(0);
         ItemStack secondItem = inv.getItem(1);
-        if (firstItem == null || secondItem != null || !firstItem.getType().equals(mapMaterial)) {
-            return;
-        }
-        if (NBT.get(firstItem, nbt -> nbt.hasTag(COLORS) || nbt.hasTag(FLAG))) {
-            return;
-        }
-        Player player = null;
-        for (HumanEntity viewer : event.getViewers()) {
-            if (viewer instanceof Player) {
-                if (!viewer.hasPermission("staticmap.use")) return;
-                player = (Player) viewer;
-                break;
+        if (isNotMap(firstItem)) return;
+        if (secondItem != null && !secondItem.getType().equals(Material.AIR)) return;
+        if (NBT.get(firstItem, nbt -> nbt.hasTag(COLORS) || nbt.hasTag(FLAG))) return;
+        preparing.add(uuid);
+
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            preparing.remove(uuid);
+            ItemStack itemStack = firstItem.clone();
+            MapMeta itemMeta = getItemMeta(itemStack);
+
+            String renameText = inv.getRenameText();
+            if (renameText != null && !renameText.isEmpty()) {
+                itemMeta.setDisplayName(renameText);
             }
-        }
-        if (player == null) return;
+            itemMeta.setLore(plugin.getMapLore());
+            itemStack.setItemMeta(itemMeta);
 
-        ItemStack itemStack = new ItemStack(mapMaterial);
-        MapMeta mapMeta = getItemMeta(firstItem);
-        MapMeta itemMeta = mapMeta.clone();
-
-        String renameText = event.getInventory().getRenameText();
-        if (renameText != null && !renameText.isEmpty()) {
-            itemMeta.setDisplayName(renameText);
-        }
-        itemMeta.setLore(plugin.getMapLore());
-        itemStack.setItemMeta(itemMeta);
-
-        NBT.modify(itemStack, nbt -> { // 只添加 flag，地图数据之后再加，以免占用地图ID
-            nbt.setBoolean(FLAG, true);
-        });
-
-        itemStack.setAmount(firstItem.getAmount());
-        Integer cost = plugin.getMapCost();
-        if (cost != null) {
-            inv.setRepairCost(cost);
-        }
-        event.setResult(itemStack);
+            NBT.modify(itemStack, nbt -> { // 只添加 flag，地图数据之后再加，以免占用地图ID
+                nbt.setBoolean(FLAG, true);
+            });
+            Integer cost = plugin.getMapCost();
+            if (cost != null) {
+                inv.setRepairCost(cost);
+            }
+            event.setResult(itemStack);
+            inv.setItem(2, itemStack);
+        }, 1L); // 延时 1 tick，防止与 EcoEnchants 冲突
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -141,7 +139,7 @@ public class StaticMapListener implements Listener {
         if (e.isCancelled() || !(e.getWhoClicked() instanceof Player)) return;
         Player player = (Player) e.getWhoClicked();
         ItemStack item = e.getCurrentItem();
-        if (item == null || !item.getType().equals(mapMaterial)) return;
+        if (isNotMap(item)) return;
         if (NBT.get(item, nbt -> { // 如果点击的物品有 flag，则将地图数据存入 nbt
             return nbt.hasTag(FLAG);
         })) {
@@ -172,7 +170,8 @@ public class StaticMapListener implements Listener {
         Inventory inv = e.getInventory();
         if (inv.getHolder() instanceof BlockInventoryHolder) {
             for (int i = 0; i < inv.getSize(); i++) {
-                checkMapUpdate(inv.getItem(i));
+                final int index = i;
+                checkMapUpdate(inv.getItem(index), item -> inv.setItem(index, item));
             }
         }
     }
