@@ -1,4 +1,4 @@
-package com.molean.staticmap;
+package com.molean.staticmap.outdated;
 
 import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTContainer;
@@ -68,5 +68,15 @@ public class DataSimplified {
             return nbt.getCompound("tag").getByteArray("staticmap:" + key);
         }
         return null;
+    }
+
+    public void remove(String key) {
+        if (pdh != null) {
+            pdh.remove(key);
+            return;
+        }
+        if (nbt != null && nbt.getCompound("tag") != null) {
+            nbt.getCompound("tag").removeKey("staticmap:" + key);
+        }
     }
 }

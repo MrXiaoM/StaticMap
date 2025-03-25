@@ -9,3 +9,7 @@ lore: "&7跨服地图画"
 hidden-cursors:
   # 玩家位置指针
   - WHITE_POINTER
+
+# 是否禁用 1.x 插件数据转换器
+# 如果你首次安装本插件时版本为 2.x，请保持这个选项开启
+disable-outdate-converter: true

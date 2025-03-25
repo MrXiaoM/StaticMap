@@ -20,6 +20,7 @@ public class StaticMapListenerPaper implements Listener {
         Entity entity = event.getEntity();
         if (!(entity instanceof ItemFrame)) return;
         ItemFrame itemFrame = (ItemFrame) entity;
+        plugin.outdateConverter.onEntityAddToWorld(itemFrame);
         parent.checkMapUpdate(itemFrame.getItem(),
                 item -> Bukkit.getScheduler().runTask(plugin, () -> itemFrame.setItem(item)));
     }

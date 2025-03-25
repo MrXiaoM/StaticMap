@@ -2,10 +2,12 @@ package com.molean.staticmap;
 
 import com.molean.staticmap.nms.IVersion;
 import com.molean.staticmap.nms.VersionManager;
+import com.molean.staticmap.outdated.OutdateConverter;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.map.MapCursor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,8 +26,10 @@ public final class StaticMap extends JavaPlugin {
         MinecraftVersion.getVersion();
     }
 
-    List<String> mapLore;
-    Integer mapCost;
+    final OutdateConverter outdateConverter = new OutdateConverter(this);
+    private StaticMapListener listener;
+    private List<String> mapLore;
+    private Integer mapCost;
     @Override
     public void onEnable() {
         getLogger().info("当前服务器版本: " + IVersion.getDisplayVersion());
@@ -37,11 +41,8 @@ public final class StaticMap extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        if (DataSimplified.isPDHNotAvailable()) {
-            getLogger().info("当前服务端不支持 Persistence 特性，将使用 item-nbt-api 储存数据");
-        }
         VersionManager.registerListener(this);
-        new StaticMapListener(this, init.equals(VersionManager.Status.LEGACY_OLD));
+        listener = new StaticMapListener(this, init.equals(VersionManager.Status.LEGACY_OLD));
         this.saveDefaultConfig();
         this.reloadConfig();
     }
@@ -52,6 +53,10 @@ public final class StaticMap extends JavaPlugin {
 
     public Integer getMapCost() {
         return mapCost;
+    }
+
+    public StaticMapListener getListener() {
+        return listener;
     }
 
     @Override
@@ -68,6 +73,7 @@ public final class StaticMap extends JavaPlugin {
     public void reloadConfig() {
         super.reloadConfig();
         FileConfiguration config = getConfig();
+        config.setDefaults(new MemoryConfiguration());
 
         mapLore.clear();
         if (config.isList("lore")) {
@@ -89,6 +95,11 @@ public final class StaticMap extends JavaPlugin {
             }
             MapCursor.Type type = MapCursor.Type.valueOf(s.toUpperCase());
             MapUtils.hiddenCursors.add(type);
+        }
+        if (config.getBoolean("disable-outdate-converter", false)) {
+            outdateConverter.unregister();
+        } else {
+            outdateConverter.register();
         }
     }
 

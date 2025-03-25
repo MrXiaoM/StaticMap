@@ -1,4 +1,4 @@
-package com.molean.staticmap;
+package com.molean.staticmap.outdated;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -41,6 +41,12 @@ public class PDHSimplified {
         if (holder == null) return null;
         PersistentDataContainer container = holder.getPersistentDataContainer();
         return container.get(new NamespacedKey(NAMESPACE, key.toLowerCase(Locale.ROOT)), PersistentDataType.BYTE_ARRAY);
+    }
+
+    public void remove(String key) {
+        if (holder == null) throw new IllegalStateException("ItemMeta == null");
+        PersistentDataContainer container = holder.getPersistentDataContainer();
+        container.remove(new NamespacedKey(NAMESPACE, key.toLowerCase(Locale.ROOT)));
     }
 
     @Nullable
