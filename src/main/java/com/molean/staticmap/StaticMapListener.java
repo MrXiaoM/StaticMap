@@ -75,8 +75,9 @@ public class StaticMapListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
-        PlayerInventory inv = event.getPlayer().getInventory();
+        Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            PlayerInventory inv = player.getInventory();
             for (int i = 0; i < inv.getSize(); i++) {
                 checkMapUpdate(inv.getItem(i));
             }
