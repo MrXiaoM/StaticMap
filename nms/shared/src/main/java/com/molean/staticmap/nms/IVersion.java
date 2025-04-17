@@ -32,12 +32,14 @@ public interface IVersion {
         Class<?> clazz = nms.contains("_R")
                 ? Class.forName("org.bukkit.craftbukkit." + nms + ".util.CraftChatMessage")
                 : Class.forName("org.bukkit.craftbukkit.util.CraftChatMessage");
-        Method fromComponent = null;
-        for (Method method : clazz.getDeclaredMethods()) {
-            if (method.getName().equals("fromComponent")
-                    && method.getParameterCount() == 1
-                    && method.getParameterTypes()[0].isInstance(component)) {
-                fromComponent = method;
+        Method fromComponent = Internal.fromComponent;
+        if (fromComponent == null) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (method.getName().equals("fromComponent")
+                        && method.getParameterCount() == 1
+                        && method.getParameterTypes()[0].isInstance(component)) {
+                    Internal.fromComponent = fromComponent = method;
+                }
             }
         }
         return fromComponent == null ? null : (T)fromComponent.invoke(null, component);
@@ -51,12 +53,14 @@ public interface IVersion {
         Class<?> clazz = nms.contains("_R")
                 ? Class.forName("org.bukkit.craftbukkit." + nms + ".util.CraftChatMessage")
                 : Class.forName("org.bukkit.craftbukkit.util.CraftChatMessage");
-        Method toComponent = null;
-        for (Method method : clazz.getDeclaredMethods()) {
-            if (method.getName().equals("fromString")
-                    && method.getParameterCount() == 1
-                    && method.getParameterTypes()[0].equals(String.class)) {
-                toComponent = method;
+        Method toComponent = Internal.fromString;
+        if (toComponent == null) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (method.getName().equals("fromString")
+                        && method.getParameterCount() == 1
+                        && method.getParameterTypes()[0].equals(String.class)) {
+                    Internal.fromString = toComponent = method;
+                }
             }
         }
         return toComponent == null ? null : (T)toComponent.invoke(null, component);
@@ -77,7 +81,10 @@ public interface IVersion {
     }
 
     static void warn(Throwable t) {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("StaticMap");
+        Plugin plugin = Internal.plugin;
+        if (plugin == null) {
+            Internal.plugin = plugin = Bukkit.getPluginManager().getPlugin("StaticMap");
+        }
         if (plugin != null) {
             StringWriter sw = new StringWriter();
             try (PrintWriter pw = new PrintWriter(sw)) {
@@ -85,5 +92,11 @@ public interface IVersion {
             }
             plugin.getLogger().warning(sw.toString());
         }
+    }
+
+    class Internal {
+        private static Method fromComponent;
+        private static Method fromString;
+        private static Plugin plugin;
     }
 }
