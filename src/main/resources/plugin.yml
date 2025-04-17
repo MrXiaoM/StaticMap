@@ -2,6 +2,7 @@ name: StaticMap
 version: '${version}'
 main: com.molean.staticmap.StaticMap
 api-version: 1.13
+folia-supported: true
 permissions:
   staticmap.use:
     description: Allows build static map

@@ -16,6 +16,7 @@ allprojects {
         maven("https://repo.codemc.io/repository/maven-public/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         mavenCentral()
+        maven("https://jitpack.io/")
         maven("https://oss.sonatype.org/content/groups/public/")
     }
 
@@ -30,7 +31,8 @@ allprojects {
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.14-R0.1-SNAPSHOT")
 
-    implementation("de.tr7zw:item-nbt-api:2.14.1")
+    implementation("de.tr7zw:item-nbt-api:2.14.2-SNAPSHOT")
+    implementation("com.github.technicallycoded:FoliaLib:0.4.4")
 
     implementation("org.jetbrains:annotations:24.0.0")
     for (proj in rootProject.project(":nms").subprojects) {
@@ -54,6 +56,7 @@ tasks {
             "org.intellij.lang.annotations" to "annotations.intellij",
             "org.jetbrains.annotations" to "annotations.jetbrains",
             "de.tr7zw.changeme.nbtapi" to "nbtapi",
+            "com.tcoded.folialib" to "folialib",
         ).forEach{ (original, target) ->
             relocate(original, "com.molean.staticmap.utils.$target")
         }

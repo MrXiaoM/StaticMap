@@ -3,6 +3,8 @@ package com.molean.staticmap;
 import com.molean.staticmap.nms.IVersion;
 import com.molean.staticmap.nms.VersionManager;
 import com.molean.staticmap.outdated.OutdateConverter;
+import com.tcoded.folialib.FoliaLib;
+import com.tcoded.folialib.impl.PlatformScheduler;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -25,12 +27,19 @@ public final class StaticMap extends JavaPlugin {
         MinecraftVersion.disableUpdateCheck();
         MinecraftVersion.disableBStats();
         MinecraftVersion.getVersion();
+        foliaLib = new FoliaLib(this);
     }
 
     final OutdateConverter outdateConverter = new OutdateConverter(this);
     private StaticMapListener listener;
     private final List<String> mapLore = new ArrayList<>();
     private Integer mapCost = 20;
+    private FoliaLib foliaLib;
+
+    public PlatformScheduler getScheduler() {
+        return foliaLib.getScheduler();
+    }
+
     @Override
     public void onEnable() {
         getLogger().info("当前服务器版本: " + IVersion.getDisplayVersion());

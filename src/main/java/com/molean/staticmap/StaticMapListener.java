@@ -79,7 +79,7 @@ public class StaticMapListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         preparing.remove(player.getUniqueId());
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        plugin.getScheduler().runLater(() -> {
             PlayerInventory inv = player.getInventory();
             for (int i = 0; i < inv.getSize(); i++) {
                 final int index = i;
@@ -110,7 +110,7 @@ public class StaticMapListener implements Listener {
         if (NBT.get(firstItem, nbt -> nbt.hasTag(COLORS) || nbt.hasTag(FLAG))) return;
         preparing.add(uuid);
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        plugin.getScheduler().runLater(() -> {
             preparing.remove(uuid);
             ItemStack itemStack = firstItem.clone();
             MapMeta itemMeta = getItemMeta(itemStack);

@@ -27,6 +27,6 @@ public class StaticMapListenerSpigot implements Listener {
         ItemFrame itemFrame = (ItemFrame) entity;
         plugin.outdateConverter.onEntityAddToWorld(itemFrame);
         parent.checkMapUpdate(itemFrame.getItem(),
-                item -> Bukkit.getScheduler().runTask(plugin, () -> itemFrame.setItem(item)));
+                item -> plugin.getScheduler().runNextTick((t) -> itemFrame.setItem(item)));
     }
 }
