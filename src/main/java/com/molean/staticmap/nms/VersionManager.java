@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
-import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
@@ -17,6 +16,10 @@ public class VersionManager {
     }
     public static Status init() {
         String ver = IVersion.getNMSVersion();
+        if (matchVersions(ver, "v1_21_R4", "1.21.5")) {
+            nms = new Version_1_21_5();
+            return Status.OK;
+        }
         if (matchVersions(ver, "v1_21", "1.21")) {
             nms = new Version_1_21();
             return Status.OK;
