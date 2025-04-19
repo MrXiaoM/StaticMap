@@ -56,7 +56,7 @@ public class VersionManager {
             nms = new VersionLegacy();
             return Status.LEGACY;
         }
-        if (matchVersions(ver, "1_8", "v1_9", "v1_10", "v1_11", "v1_12")) {
+        if (matchVersions(ver, "v1_8", "v1_9", "v1_10", "v1_11", "v1_12")) {
             nms = new VersionLegacy();
             return Status.LEGACY_OLD;
         }
