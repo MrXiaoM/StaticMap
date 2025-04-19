@@ -40,6 +40,10 @@ public final class StaticMap extends JavaPlugin {
         return foliaLib.getScheduler();
     }
 
+    public boolean isFolia() {
+        return foliaLib.isFolia();
+    }
+
     @Override
     public void onEnable() {
         getLogger().info("当前服务器版本: " + IVersion.getDisplayVersion());

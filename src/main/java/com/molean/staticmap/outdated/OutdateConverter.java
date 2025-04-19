@@ -33,6 +33,7 @@ public class OutdateConverter implements Listener {
 
     public void register() {
         unregister();
+        if (plugin.isFolia()) return;
         Bukkit.getPluginManager().registerEvents(this, plugin);
         registered = true;
     }
