@@ -22,6 +22,6 @@ public class StaticMapListenerPaper implements Listener {
         ItemFrame itemFrame = (ItemFrame) entity;
         plugin.outdateConverter.onEntityAddToWorld(itemFrame);
         parent.checkMapUpdate(itemFrame.getItem(),
-                item -> plugin.getScheduler().runNextTick((t) -> itemFrame.setItem(item)));
+                item -> plugin.getScheduler().runAtEntity(itemFrame, (t) -> itemFrame.setItem(item)));
     }
 }
