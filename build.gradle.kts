@@ -23,6 +23,7 @@ allprojects {
 @Suppress("VulnerableLibrariesLocal")
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.14-R0.1-SNAPSHOT")
+    // compileOnly("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT")
 
     implementation("de.tr7zw:item-nbt-api:2.14.2-SNAPSHOT")
     implementation("com.github.technicallycoded:FoliaLib:0.4.4")
