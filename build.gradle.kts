@@ -4,11 +4,10 @@ plugins {
 }
 
 val targetJavaVersion = 8
+group = "com.molean"
+version = "2.0.0"
 
 allprojects {
-    group = "com.molean"
-    version = "2.0.0"
-
     repositories {
         maven("https://mirrors.huaweicloud.com/repository/maven")
         maven("https://repo.papermc.io/repository/maven-public/")
@@ -18,12 +17,6 @@ allprojects {
         mavenCentral()
         maven("https://jitpack.io/")
         maven("https://oss.sonatype.org/content/groups/public/")
-    }
-
-    tasks.withType<JavaCompile>().configureEach {
-        options.encoding = "UTF-8"
-        sourceCompatibility = targetJavaVersion.toString()
-        targetCompatibility = targetJavaVersion.toString()
     }
 }
 
@@ -63,6 +56,11 @@ tasks {
     }
     build {
         dependsOn(shadowJar)
+    }
+    withType<JavaCompile>().configureEach {
+        options.encoding = "UTF-8"
+        sourceCompatibility = targetJavaVersion.toString()
+        targetCompatibility = targetJavaVersion.toString()
     }
 
     processResources {
