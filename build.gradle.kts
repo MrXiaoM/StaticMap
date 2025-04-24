@@ -5,7 +5,7 @@ plugins {
 
 val targetJavaVersion = 8
 group = "com.molean"
-version = "2.0.1"
+version = "2.0.2"
 
 allprojects {
     repositories {
