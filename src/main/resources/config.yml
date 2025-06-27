@@ -1,11 +1,16 @@
 # 创建跨服地图画所需等级
 cost: 20
 
-# 跨服地图画lore
-lore: "&7跨服地图画"
+# 跨服地图画名称，支持 PAPI 变量（仅创建时替换变量，非动态更新变量）
+# 仅在玩家未在铁砧更改物品名称时使用
+name: "&7跨服地图画"
+# 跨服地图画lore，支持 PAPI 变量，同上
+lore:
+  - "&7跨服地图画"
 
 # 该隐藏地图画上的哪些图标
 # 图标列表可在以下链接查询，使用*代表隐藏所有图标
+# https://javadoc.mcio.dev/spigot/1.21.4/org/bukkit/map/MapCursor.Type.html
 hidden-cursors:
   # 玩家位置指针
   - WHITE_POINTER

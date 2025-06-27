@@ -118,8 +118,10 @@ public class StaticMapListener implements Listener {
             String renameText = inv.getRenameText();
             if (renameText != null && !renameText.isEmpty()) {
                 itemMeta.setDisplayName(renameText);
+            } else {
+                itemMeta.setDisplayName(PAPI.setPlaceholders(player, plugin.getMapName()));
             }
-            itemMeta.setLore(plugin.getMapLore());
+            itemMeta.setLore(PAPI.setPlaceholders(player, plugin.getMapLore()));
             itemStack.setItemMeta(itemMeta);
 
             NBT.modify(itemStack, nbt -> { // 只添加 flag，地图数据之后再加，以免占用地图ID

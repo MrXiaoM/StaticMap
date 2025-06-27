@@ -12,6 +12,7 @@ allprojects {
         maven("https://mirrors.huaweicloud.com/repository/maven")
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://repo.rosewooddev.io/repository/public/")
+        maven("https://repo.helpch.at/releases/")
         maven("https://repo.codemc.io/repository/maven-public/")
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         mavenCentral()
@@ -24,6 +25,8 @@ allprojects {
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.14-R0.1-SNAPSHOT")
     // compileOnly("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT")
+
+    compileOnly("me.clip:placeholderapi:2.11.6")
 
     implementation("de.tr7zw:item-nbt-api:2.15.1-SNAPSHOT")
     implementation("com.github.technicallycoded:FoliaLib:0.4.4")

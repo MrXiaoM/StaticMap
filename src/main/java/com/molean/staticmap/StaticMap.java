@@ -32,6 +32,7 @@ public final class StaticMap extends JavaPlugin {
 
     final OutdateConverter outdateConverter = new OutdateConverter(this);
     private StaticMapListener listener;
+    private String mapName = "";
     private final List<String> mapLore = new ArrayList<>();
     private Integer mapCost = 20;
     private FoliaLib foliaLib;
@@ -46,6 +47,7 @@ public final class StaticMap extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        PAPI.init();
         getLogger().info("当前服务器版本: " + IVersion.getDisplayVersion());
         VersionManager.Status init = VersionManager.init();
         if (!init.equals(VersionManager.Status.INVALID)) {
@@ -59,6 +61,10 @@ public final class StaticMap extends JavaPlugin {
         listener = new StaticMapListener(this, init.equals(VersionManager.Status.LEGACY_OLD));
         this.saveDefaultConfig();
         this.reloadConfig();
+    }
+
+    public String getMapName() {
+        return mapName;
     }
 
     public List<String> getMapLore() {
@@ -89,6 +95,7 @@ public final class StaticMap extends JavaPlugin {
         FileConfiguration config = getConfig();
         config.setDefaults(new MemoryConfiguration());
 
+        mapName = config.getString("name", "&7跨服地图画");
         mapLore.clear();
         if (config.isList("lore")) {
             for (String loreLine : config.getStringList("lore")) {

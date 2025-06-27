@@ -2,6 +2,8 @@ name: StaticMap
 version: '${version}'
 main: com.molean.staticmap.StaticMap
 api-version: 1.13
+softdepend:
+  - PlaceholderAPI
 folia-supported: true
 permissions:
   staticmap.use:
