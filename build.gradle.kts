@@ -5,7 +5,7 @@ plugins {
 
 val targetJavaVersion = 8
 group = "com.molean"
-version = "2.0.3"
+version = "2.0.4"
 
 allprojects {
     repositories {
@@ -28,7 +28,7 @@ dependencies {
 
     compileOnly("me.clip:placeholderapi:2.11.6")
 
-    implementation("de.tr7zw:item-nbt-api:2.15.1-SNAPSHOT")
+    implementation("de.tr7zw:item-nbt-api:2.15.1")
     implementation("com.github.technicallycoded:FoliaLib:0.4.4")
 
     implementation("org.jetbrains:annotations:24.0.0")
