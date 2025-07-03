@@ -16,7 +16,7 @@ public class VersionManager {
     }
     public static Status init() {
         String ver = IVersion.getNMSVersion();
-        if (matchVersions(ver, "v1_21_R4", "v1_21_R5", "1.21.5", "1.21.6")) {
+        if (matchVersions(ver, "v1_21_R4", "v1_21_R5", "1.21.5", "1.21.6", "1.21.7")) {
             nms = new Version_1_21_5();
             return Status.OK;
         }
@@ -28,27 +28,27 @@ public class VersionManager {
             nms = new Version_1_20_6();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_20_R3")) {
+        if (matchVersions(ver, "v1_20_R3", "1.20.3", "1.20.4")) {
             nms = new Version_1_20_4();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_20_R2")) {
+        if (matchVersions(ver, "v1_20_R2", "1.20.2")) {
             nms = new Version_1_20_2();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_20_R1")) {
+        if (matchVersions(ver, "v1_20_R1", "1.20", "1.20.1")) {
             nms = new Version_1_20_1();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_19")) {
+        if (matchVersions(ver, "v1_19", "1.19")) {
             nms = new Version_1_19();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_18")) {
+        if (matchVersions(ver, "v1_18", "1.18")) {
             nms = new Version_1_18();
             return Status.OK;
         }
-        if (matchVersions(ver, "v1_17")) {
+        if (matchVersions(ver, "v1_17", "1.17")) {
             nms = new Version_1_17();
             return Status.OK;
         }
