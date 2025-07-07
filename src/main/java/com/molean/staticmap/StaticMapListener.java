@@ -31,6 +31,7 @@ public class StaticMapListener implements Listener {
     public static final String COLORS = "staticmap_colors";
     public static final String CURSORS = "staticmap_cursors";
     public static final String FLAG = "staticmap_flag";
+    public static final String IDS = "staticmap_ids";
     private final StaticMap plugin;
     private final Material mapMaterial;
     private final Set<UUID> preparing = new HashSet<>();
@@ -68,8 +69,7 @@ public class StaticMapListener implements Listener {
         byte[] colors = pair[0];
         List<MapCursor> cursors = fromBytes(pair[1]);
         MapMeta itemMeta = getItemMeta(item);
-        MapUtils.updateStaticMap(itemMeta, colors, cursors);
-        item.setItemMeta(itemMeta);
+        MapUtils.updateStaticMap(item, itemMeta, plugin.getServerName(), colors, cursors);
         if (setItem != null) {
             setItem.accept(item);
         }
@@ -150,8 +150,7 @@ public class StaticMapListener implements Listener {
             byte[] colors = MapUtils.getColors(mapMeta);
             List<MapCursor> cursors = MapUtils.getCursors(player, mapMeta);
 
-            MapUtils.updateStaticMap(mapMeta, colors, cursors);
-            item.setItemMeta(mapMeta);
+            MapUtils.updateStaticMap(item, mapMeta, plugin.getServerName(), colors, cursors);
 
             NBT.modify(item, nbt -> {
                 nbt.removeKey(FLAG);

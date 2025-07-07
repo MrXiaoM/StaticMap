@@ -32,6 +32,7 @@ public final class StaticMap extends JavaPlugin {
 
     final OutdateConverter outdateConverter = new OutdateConverter(this);
     private StaticMapListener listener;
+    private String serverName;
     private String mapName = "";
     private final List<String> mapLore = new ArrayList<>();
     private Integer mapCost = 20;
@@ -61,6 +62,10 @@ public final class StaticMap extends JavaPlugin {
         listener = new StaticMapListener(this, init.equals(VersionManager.Status.LEGACY_OLD));
         this.saveDefaultConfig();
         this.reloadConfig();
+    }
+
+    public String getServerName() {
+        return serverName;
     }
 
     public String getMapName() {
@@ -94,6 +99,12 @@ public final class StaticMap extends JavaPlugin {
         super.reloadConfig();
         FileConfiguration config = getConfig();
         config.setDefaults(new MemoryConfiguration());
+        String serverName = config.getString("server-name", "server port");
+        if ("server port".equalsIgnoreCase(serverName)) {
+            this.serverName = String.valueOf(Bukkit.getServer().getPort());
+        } else {
+            this.serverName = serverName;
+        }
 
         mapName = config.getString("name", "&7跨服地图画");
         mapLore.clear();
