@@ -17,7 +17,6 @@ allprojects {
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
         mavenCentral()
         maven("https://jitpack.io/")
-        maven("https://oss.sonatype.org/content/groups/public/")
     }
 }
 
@@ -28,7 +27,7 @@ dependencies {
 
     compileOnly("me.clip:placeholderapi:2.11.6")
 
-    implementation("de.tr7zw:item-nbt-api:2.15.1")
+    implementation("de.tr7zw:item-nbt-api:2.15.2-SNAPSHOT")
     implementation("com.github.technicallycoded:FoliaLib:0.4.4")
 
     implementation("org.jetbrains:annotations:24.0.0")
