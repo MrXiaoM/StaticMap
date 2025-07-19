@@ -15,6 +15,7 @@ import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCursor;
+import org.bukkit.map.MapRenderer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -126,6 +127,8 @@ public class StaticMapListener implements Listener {
         ItemMeta meta = itemStack.getItemMeta();
         if (meta instanceof MapMeta) {
             MapMeta itemMeta = (MapMeta) meta;
+            MapRenderer renderer = MapUtils.getRendererOrNull(itemMeta);
+            if (renderer == null || renderer instanceof MapUtils.MyMapRenderer) return;
 
             String renameText = inv.getRenameText();
             if (renameText != null && !renameText.isEmpty()) {

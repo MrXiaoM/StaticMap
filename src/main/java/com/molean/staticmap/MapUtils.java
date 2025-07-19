@@ -22,7 +22,7 @@ import static com.molean.staticmap.StaticMapListener.IDS;
 @SuppressWarnings({"deprecation"})
 public class MapUtils {
 
-    static class MyMapRenderer extends MapRenderer {
+    public static class MyMapRenderer extends MapRenderer {
         public final int hashCode;
         public final byte[] colors;
         public final List<MapCursor> cursors;
@@ -153,7 +153,7 @@ public class MapUtils {
         return list;
     }
 
-    private static MapRenderer getRendererOrNull(MapMeta mapMeta) {
+    public static MapRenderer getRendererOrNull(MapMeta mapMeta) {
         MapView mapView = mapMeta.getMapView();
 
         if (mapView == null) {
@@ -168,13 +168,13 @@ public class MapUtils {
 
     public static byte[] getColors(MapMeta mapMeta) {
         MapRenderer renderer = getRendererOrNull(mapMeta);
-        if (renderer == null) return null;
+        if (renderer == null || renderer instanceof MyMapRenderer) return null;
         return VersionManager.getColors(renderer);
     }
 
     public static List<MapCursor> getCursors(Player player, MapMeta mapMeta) {
         MapRenderer renderer = getRendererOrNull(mapMeta);
-        if (renderer == null) return null;
+        if (renderer == null || renderer instanceof MyMapRenderer) return null;
         return VersionManager.getCursors(player, renderer);
     }
 
