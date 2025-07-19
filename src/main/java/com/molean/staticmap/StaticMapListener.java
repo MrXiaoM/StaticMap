@@ -61,17 +61,19 @@ public class StaticMapListener implements Listener {
 
     public void checkMapUpdate(ItemStack item, Consumer<ItemStack> setItem) {
         if (isNotMap(item)) return;
-        byte[][] pair = NBT.get(item, nbt -> {
-            byte[] colors = bytes(nbt, COLORS);
-            byte[] cursors = bytes(nbt, CURSORS);
-            return new byte[][] { colors, cursors };
-        });
-        byte[] colors = pair[0];
-        List<MapCursor> cursors = fromBytes(pair[1]);
-        MapMeta itemMeta = getItemMeta(item);
-        MapUtils.updateStaticMap(item, itemMeta, plugin.getServerName(), colors, cursors);
-        if (setItem != null) {
-            setItem.accept(item);
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof MapMeta) {
+            byte[][] pair = NBT.get(item, nbt -> {
+                byte[] colors = bytes(nbt, COLORS);
+                byte[] cursors = bytes(nbt, CURSORS);
+                return new byte[][]{colors, cursors};
+            });
+            byte[] colors = pair[0];
+            List<MapCursor> cursors = fromBytes(pair[1]);
+            MapUtils.updateStaticMap(item, (MapMeta) meta, plugin.getServerName(), colors, cursors);
+            if (setItem != null) {
+                setItem.accept(item);
+            }
         }
     }
 
@@ -110,10 +112,20 @@ public class StaticMapListener implements Listener {
         if (NBT.get(firstItem, nbt -> nbt.hasTag(COLORS) || nbt.hasTag(FLAG))) return;
         preparing.add(uuid);
 
-        plugin.getScheduler().runLater(() -> {
-            preparing.remove(uuid);
-            ItemStack itemStack = firstItem.clone();
-            MapMeta itemMeta = getItemMeta(itemStack);
+        int ticks = plugin.getAnvilDelayTicks();
+        if (ticks > 0) {
+            plugin.getScheduler().runLater(() -> runPrepareAnvil(uuid, player, firstItem, inv, event), 1L);
+        } else {
+            runPrepareAnvil(uuid, player, firstItem, inv, event);
+        }
+    }
+
+    private void runPrepareAnvil(UUID uuid, Player player, ItemStack firstItem, AnvilInventory inv, PrepareAnvilEvent event) {
+        preparing.remove(uuid);
+        ItemStack itemStack = firstItem.clone();
+        ItemMeta meta = itemStack.getItemMeta();
+        if (meta instanceof MapMeta) {
+            MapMeta itemMeta = (MapMeta) meta;
 
             String renameText = inv.getRenameText();
             if (renameText != null && !renameText.isEmpty()) {
@@ -133,7 +145,7 @@ public class StaticMapListener implements Listener {
             }
             event.setResult(itemStack);
             inv.setItem(2, itemStack);
-        }, 1L); // 延时 1 tick，防止与 EcoEnchants 冲突
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -142,11 +154,11 @@ public class StaticMapListener implements Listener {
         Player player = (Player) e.getWhoClicked();
         ItemStack item = e.getCurrentItem();
         if (isNotMap(item)) return;
-        if (NBT.get(item, nbt -> { // 如果点击的物品有 flag，则将地图数据存入 nbt
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof MapMeta && NBT.get(item, nbt -> { // 如果点击的物品有 flag，则将地图数据存入 nbt
             return nbt.hasTag(FLAG);
         })) {
-            MapMeta mapMeta = getItemMeta(item);
-
+            MapMeta mapMeta = (MapMeta) meta;
             byte[] colors = MapUtils.getColors(mapMeta);
             List<MapCursor> cursors = MapUtils.getCursors(player, mapMeta);
 
@@ -224,11 +236,5 @@ public class StaticMapListener implements Listener {
             return true;
         }
         return false;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    public static <T extends ItemMeta> T getItemMeta(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        return (T) (meta == null ? Bukkit.getItemFactory().getItemMeta(item.getType()) : meta);
     }
 }

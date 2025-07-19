@@ -7,6 +7,7 @@ import com.tcoded.folialib.FoliaLib;
 import com.tcoded.folialib.impl.PlatformScheduler;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -36,6 +37,7 @@ public final class StaticMap extends JavaPlugin {
     private String mapName = "";
     private final List<String> mapLore = new ArrayList<>();
     private Integer mapCost = 20;
+    private int anvilDelayTicks;
     private FoliaLib foliaLib;
 
     public PlatformScheduler getScheduler() {
@@ -80,6 +82,10 @@ public final class StaticMap extends JavaPlugin {
         return mapCost;
     }
 
+    public int getAnvilDelayTicks() {
+        return anvilDelayTicks;
+    }
+
     public StaticMapListener getListener() {
         return listener;
     }
@@ -94,6 +100,16 @@ public final class StaticMap extends JavaPlugin {
         return true;
     }
 
+    private int getAnvilDelayTicksAuto() {
+        if (foliaLib.isFolia()) {
+            return 0;
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("EcoEnchants")) {
+            return 1;
+        }
+        return 0;
+    }
+
     @Override
     public void reloadConfig() {
         super.reloadConfig();
@@ -106,7 +122,17 @@ public final class StaticMap extends JavaPlugin {
             this.serverName = serverName;
         }
 
+        String anvilDelayStr = config.getString("anvil-delay-ticks", "auto");
+        if ("auto".equals(anvilDelayStr) || anvilDelayStr == null) {
+            anvilDelayTicks = getAnvilDelayTicksAuto();
+        } else try {
+            anvilDelayTicks = Integer.parseInt(anvilDelayStr);
+        } catch (Throwable t) {
+            anvilDelayTicks = getAnvilDelayTicksAuto();
+        }
+
         mapName = config.getString("name", "&7跨服地图画");
+        mapName = mapName == null ? "" : ChatColor.translateAlternateColorCodes('&', mapName);
         mapLore.clear();
         if (config.isList("lore")) {
             for (String loreLine : config.getStringList("lore")) {
