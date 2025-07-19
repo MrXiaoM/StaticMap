@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 1.21.5, 1.21.6
+ * 1.21.5, 1.21.6, 1.21.7, 1.21.8
  */
 public class Version_1_21_5 implements IVersion {
 
@@ -29,7 +29,7 @@ public class Version_1_21_5 implements IVersion {
             WorldMap worldMap = (WorldMap) worldMapField.get(renderer);
             return worldMap.h;
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw IVersion.doColorCatch(type, e);
         }
     }
 
@@ -61,7 +61,7 @@ public class Version_1_21_5 implements IVersion {
             }
             return cursors;
         } catch (ReflectiveOperationException e) {
-            IVersion.warn(new RuntimeException(type.getName(), e));
+            IVersion.doCursorCatch(type, e);
             return new ArrayList<>();
         }
     }

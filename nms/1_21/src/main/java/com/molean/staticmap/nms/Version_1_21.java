@@ -28,7 +28,7 @@ public class Version_1_21 implements IVersion {
             WorldMap worldMap = (WorldMap) worldMapField.get(renderer);
             return worldMap.g;
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw IVersion.doColorCatch(type, e);
         }
     }
 
@@ -60,7 +60,7 @@ public class Version_1_21 implements IVersion {
             }
             return cursors;
         } catch (ReflectiveOperationException e) {
-            IVersion.warn(new RuntimeException(type.getName(), e));
+            IVersion.doCursorCatch(type, e);
             return new ArrayList<>();
         }
     }

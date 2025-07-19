@@ -94,6 +94,14 @@ public interface IVersion {
         }
     }
 
+    static RuntimeException doColorCatch(Class<?> type, Throwable e) {
+        return new RuntimeException("从 " + type.getName() + " 获取地图颜色数据时出错", e);
+    }
+
+    static void doCursorCatch(Class<?> type, Throwable e) {
+        IVersion.warn(new RuntimeException("从 " + type.getName() + " 获取图标数据时出错", e));
+    }
+
     class Internal {
         private static Method fromComponent;
         private static Method fromString;

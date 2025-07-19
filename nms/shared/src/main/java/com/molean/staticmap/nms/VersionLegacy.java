@@ -27,7 +27,7 @@ public class VersionLegacy implements IVersion {
             Object worldMapInst = worldMapField.get(renderer);
             return (byte[]) colors.get(worldMapInst);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(type.getName(), e);
+            throw IVersion.doColorCatch(type, e);
         }
     }
 
@@ -93,7 +93,7 @@ public class VersionLegacy implements IVersion {
             }
             return cursors;
         } catch (ReflectiveOperationException e) {
-            IVersion.warn(new RuntimeException(type.getName(), e));
+            IVersion.doCursorCatch(type, e);
             return new ArrayList<>();
         }
     }

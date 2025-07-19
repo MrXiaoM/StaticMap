@@ -27,7 +27,7 @@ public class Version_1_18 implements IVersion {
             WorldMap worldMap = (WorldMap) worldMapField.get(renderer);
             return worldMap.g;
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(type.getName(), e);
+            throw IVersion.doColorCatch(type, e);
         }
     }
 
@@ -57,7 +57,7 @@ public class Version_1_18 implements IVersion {
             }
             return cursors;
         } catch (ReflectiveOperationException e) {
-            IVersion.warn(new RuntimeException(type.getName(), e));
+            IVersion.doCursorCatch(type, e);
             return new ArrayList<>();
         }
     }
