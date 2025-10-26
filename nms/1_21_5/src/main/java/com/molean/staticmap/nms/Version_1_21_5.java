@@ -66,13 +66,16 @@ public class Version_1_21_5 implements IVersion {
         }
     }
 
+    @SuppressWarnings({"deprecation"})
     private MapCursor.Type getType(MinecraftKey key) {
         if (key == null) return null;
         for (MapCursor.Type type : Registry.MAP_DECORATION_TYPE) {
-            NamespacedKey typeKey = type.getKeyOrNull();
-            if (typeKey != null && typeKey.getKey().equals(key.a())) {
-                return type;
-            }
+            try {
+                NamespacedKey typeKey = type.getKey();
+                if (typeKey.getKey().equals(key.a())) {
+                    return type;
+                }
+            } catch (Throwable ignored) {}
         }
         return null;
     }

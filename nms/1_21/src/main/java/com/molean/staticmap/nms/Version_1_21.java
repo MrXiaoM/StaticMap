@@ -4,6 +4,7 @@ import net.minecraft.resources.MinecraftKey;
 import net.minecraft.world.level.saveddata.maps.MapIcon;
 import net.minecraft.world.level.saveddata.maps.WorldMap;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCursor;
@@ -65,12 +66,16 @@ public class Version_1_21 implements IVersion {
         }
     }
 
+    @SuppressWarnings({"deprecation"})
     private MapCursor.Type getType(MinecraftKey key) {
         if (key == null) return null;
         for (MapCursor.Type type : Registry.MAP_DECORATION_TYPE) {
-            if (type.getKey().getKey().equals(key.a())) {
-                return type;
-            }
+            try {
+                NamespacedKey typeKey = type.getKey();
+                if (typeKey.getKey().equals(key.a())) {
+                    return type;
+                }
+            } catch (Throwable ignored) {}
         }
         return null;
     }
