@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 1.21.5, 1.21.6, 1.21.7, 1.21.8
+ * 1.21.5, 1.21.6, 1.21.7, 1.21.8, 1.21.9, 1.21.10
  */
 public class Version_1_21_5 implements IVersion {
 
