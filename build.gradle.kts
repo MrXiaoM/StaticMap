@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.gradleup.shadow") version "8.3.0"
 }
 
 val targetJavaVersion = 8
@@ -22,15 +22,15 @@ allprojects {
 
 @Suppress("VulnerableLibrariesLocal")
 dependencies {
-    compileOnly("com.destroystokyo.paper:paper-api:1.14-R0.1-SNAPSHOT")
+    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
     // compileOnly("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT")
 
     compileOnly("me.clip:placeholderapi:2.11.6")
+    compileOnly("org.jetbrains:annotations:24.0.0")
 
-    implementation("de.tr7zw:item-nbt-api:2.15.2-SNAPSHOT")
-    implementation("com.github.technicallycoded:FoliaLib:0.4.4")
+    implementation("de.tr7zw:item-nbt-api:2.15.3")
+    implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
 
-    implementation("org.jetbrains:annotations:24.0.0")
     for (proj in rootProject.project(":nms").subprojects) {
         implementation(proj)
     }
@@ -47,18 +47,21 @@ java {
 
 tasks {
     shadowJar {
-        archiveClassifier.set("")
         mapOf(
-            "org.intellij.lang.annotations" to "annotations.intellij",
-            "org.jetbrains.annotations" to "annotations.jetbrains",
             "de.tr7zw.changeme.nbtapi" to "nbtapi",
             "com.tcoded.folialib" to "folialib",
         ).forEach{ (original, target) ->
             relocate(original, "com.molean.staticmap.utils.$target")
         }
     }
-    build {
+    val copyTask = create<Copy>("copyBuildArtifact") {
         dependsOn(shadowJar)
+        from(shadowJar.get().outputs)
+        rename { "${project.name}-$version.jar" }
+        into(rootProject.file("out"))
+    }
+    build {
+        dependsOn(copyTask)
     }
     withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
