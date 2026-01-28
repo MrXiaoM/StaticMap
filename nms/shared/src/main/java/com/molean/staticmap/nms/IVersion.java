@@ -74,7 +74,7 @@ public interface IVersion {
     static String getNMSVersion() {
         String name = Bukkit.getServer().getClass().getPackage().getName();
         if (name.length() < 28) {
-            Matcher m = Pattern.compile("MC: (1\\.2[0-9](\\.[0-9])?)").matcher(Bukkit.getVersion());
+            Matcher m = Pattern.compile("MC: (1\\.2[0-9](\\.[0-9]+)?)").matcher(Bukkit.getVersion());
             return m.find() && m.groupCount() > 0 ? m.group(1) : "";
         }
         return Bukkit.getServer().getClass().getPackage().getName().substring(23);
