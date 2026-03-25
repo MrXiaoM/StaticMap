@@ -1,5 +1,8 @@
 subprojects {
     apply(plugin="java")
+    extensions.configure<JavaPluginExtension> {
+        disableAutoTargetJvm()
+    }
 
     dependencies {
         if (name != "shared") add("compileOnly", project(":nms:shared"))

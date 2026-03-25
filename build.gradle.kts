@@ -36,6 +36,7 @@ dependencies {
     }
 }
 java {
+    disableAutoTargetJvm()
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {
         val lang = JavaLanguageVersion.of(targetJavaVersion)
