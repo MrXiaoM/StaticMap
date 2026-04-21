@@ -162,7 +162,7 @@ public class StaticMapListener implements Listener {
             return nbt.hasTag(FLAG);
         })) {
             MapMeta mapMeta = (MapMeta) meta;
-            byte[] colors = MapUtils.getColors(mapMeta);
+            byte[] colors = MapUtils.getColors(mapMeta, player);
             List<MapCursor> cursors = MapUtils.getCursors(player, mapMeta);
 
             MapUtils.updateStaticMap(item, mapMeta, plugin.getServerName(), colors, cursors);

@@ -3,6 +3,7 @@ package com.molean.staticmap;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.molean.staticmap.nms.SimpleMapCanvas;
 import com.molean.staticmap.nms.VersionManager;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.NBTType;
@@ -170,9 +171,15 @@ public class MapUtils {
         return renderers.get(0);
     }
 
-    public static byte[] getColors(MapMeta mapMeta) {
+    public static byte[] getColors(MapMeta mapMeta, Player player) {
         MapRenderer renderer = getRendererOrNull(mapMeta);
         if (renderer == null || renderer instanceof MyMapRenderer) return null;
+        MapView mapView = mapMeta.getMapView();
+        if (mapView != null) {
+            SimpleMapCanvas canvas = new SimpleMapCanvas(mapView);
+            renderer.render(mapView, canvas, player);
+            return canvas.getBuffer();
+        }
         return VersionManager.getColors(renderer);
     }
 
