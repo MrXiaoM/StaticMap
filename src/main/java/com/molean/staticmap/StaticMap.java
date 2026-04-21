@@ -52,7 +52,7 @@ public final class StaticMap extends JavaPlugin {
     public void onEnable() {
         PAPI.init();
         getLogger().info("当前服务器版本: " + IVersion.getDisplayVersion());
-        VersionManager.Status init = VersionManager.init();
+        VersionManager.Status init = VersionManager.init(getLogger());
         if (!init.equals(VersionManager.Status.INVALID)) {
             getLogger().info("插件支持当前服务器版本");
         } else {
