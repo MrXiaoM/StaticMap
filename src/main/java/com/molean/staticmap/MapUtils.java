@@ -104,6 +104,10 @@ public class MapUtils {
             mapView.removeRenderer(mapView.getRenderers().get(0));
         }
         mapView.addRenderer(new MyMapRenderer(bytes, cursors));
+        try {
+            mapView.setLocked(true);
+        } catch (LinkageError ignored) {
+        }
         mapMeta.setMapView(mapView);
         item.setItemMeta(mapMeta);
 
