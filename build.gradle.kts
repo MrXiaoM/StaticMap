@@ -20,9 +20,8 @@ allprojects {
     }
 }
 
-@Suppress("VulnerableLibrariesLocal")
 dependencies {
-    compileOnly("com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
     // compileOnly("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT")
 
     compileOnly("me.clip:placeholderapi:2.11.6")

@@ -6,8 +6,11 @@ import de.tr7zw.changeme.nbtapi.NBTType;
 import de.tr7zw.changeme.nbtapi.iface.ReadableNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Crafter;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
+import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -121,6 +124,7 @@ public class StaticMapListener implements Listener {
         }
     }
 
+    @SuppressWarnings({"removal", "deprecation"})
     private void runPrepareAnvil(UUID uuid, Player player, ItemStack firstItem, AnvilInventory inv, PrepareAnvilEvent event) {
         preparing.remove(uuid);
         ItemStack itemStack = firstItem.clone();
@@ -194,6 +198,7 @@ public class StaticMapListener implements Listener {
 
     @EventHandler
     public void onCraftItem(CraftItemEvent e) {
+        if (e.isCancelled()) return;
         CraftingInventory inv = e.getInventory();
         for (ItemStack item : inv.getMatrix()) {
             if (handleInv(inv, item, e)) break;
@@ -201,7 +206,23 @@ public class StaticMapListener implements Listener {
     }
 
     @EventHandler
+    public void onCraftItem(CrafterCraftEvent e) {
+        if (e.isCancelled()) return;
+        if (mapMaterial.equals(e.getRecipe().getResult().getType())) {
+            BlockState state = e.getBlock().getState();
+            if (state instanceof Crafter) {
+                Crafter crafter = (Crafter) state;
+                Inventory inv = crafter.getInventory();
+                for (ItemStack item : inv) {
+                    if (handleInv(inv, item, e)) break;
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
+        if (e.isCancelled()) return;
         if (e.getClickedInventory() != null && e.getClickedInventory().getClass().getName().contains("Cartography")) {
             handleInv(e.getClickedInventory(), e.getCurrentItem(), e);
         }
@@ -209,6 +230,7 @@ public class StaticMapListener implements Listener {
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent e) {
+        if (e.isCancelled()) return;
         if (e.getInventory().getClass().getName().contains("Cartography")) {
             if (handleInv(e.getInventory(), e.getOldCursor(), e)) return;
             if (handleInv(e.getInventory(), e.getCursor(), e)) return;
@@ -220,6 +242,7 @@ public class StaticMapListener implements Listener {
 
     @EventHandler
     public void onInventoryMoveItem(InventoryMoveItemEvent e) {
+        if (e.isCancelled()) return;
         if (e.getDestination().getClass().getName().contains("Cartography")) {
             handleInv(e.getDestination(), e.getItem(), e);
         }
