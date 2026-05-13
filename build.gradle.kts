@@ -5,7 +5,7 @@ plugins {
 
 val targetJavaVersion = 8
 group = "com.molean"
-version = "2.0.6"
+version = "2.0.7"
 
 allprojects {
     repositories {
@@ -24,7 +24,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
     // compileOnly("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT")
 
-    compileOnly("me.clip:placeholderapi:2.11.6")
+    compileOnly("me.clip:placeholderapi:2.12.2")
     compileOnly("org.jetbrains:annotations:24.0.0")
 
     implementation("de.tr7zw:item-nbt-api:2.15.7")
