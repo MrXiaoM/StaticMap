@@ -155,7 +155,7 @@ public class StaticMapListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onTakeItem(InventoryClickEvent e) {
         if (e.isCancelled() || !(e.getWhoClicked() instanceof Player)) return;
         Player player = (Player) e.getWhoClicked();
