@@ -101,6 +101,38 @@ public class StaticMapListener implements Listener {
         checkMapUpdate(inv.getItem(newSlot), item -> inv.setItem(newSlot, item));
     }
 
+    public boolean convert(ItemStack item, Player player) {
+        if (isNotMap(item)) return false;
+        if (NBT.get(item, nbt -> nbt.hasTag(COLORS) || nbt.hasTag(FLAG))) return false;
+        ItemMeta meta = item.getItemMeta();
+        if (meta instanceof MapMeta) {
+            MapMeta itemMeta = (MapMeta) meta;
+            MapRenderer renderer = MapUtils.getRendererOrNull(itemMeta);
+            if (renderer == null || renderer instanceof MapUtils.MyMapRenderer) return false;
+            byte[] colors = MapUtils.getColors(itemMeta, player);
+            List<MapCursor> cursors = MapUtils.getCursors(player, itemMeta);
+
+            MapUtils.updateStaticMap(item, itemMeta, plugin.getServerName(), colors, cursors);
+
+            itemMeta.setDisplayName(PAPI.setPlaceholders(player, plugin.getMapName()));
+            itemMeta.setLore(PAPI.setPlaceholders(player, plugin.getMapLore()));
+            item.setItemMeta(itemMeta);
+
+            NBT.modify(item, nbt -> {
+                nbt.removeKey(FLAG);
+                nbt.setByteArray(COLORS, colors);
+                if (cursors != null && !cursors.isEmpty()) {
+                    byte[] bytes = toBytes(cursors);
+                    if (bytes != null) {
+                        nbt.setByteArray(CURSORS, bytes);
+                    }
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPrepareAnvil(PrepareAnvilEvent event) {
         Player player = (Player) Iterables.find(event.getViewers(), it -> it instanceof Player, null);

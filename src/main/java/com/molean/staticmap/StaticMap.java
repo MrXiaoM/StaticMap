@@ -12,6 +12,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapCursor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -92,7 +94,25 @@ public final class StaticMap extends JavaPlugin {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (sender.isOp()) {
+        if (args.length == 1 && "convert".equalsIgnoreCase(args[0])) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("只有玩家才能执行该命令");
+                return true;
+            }
+            Player player = (Player) sender;
+            if (!player.hasPermission("staticmap.convert")) {
+                sender.sendMessage("§c你没有执行该命令的权限");
+            }
+            int level = player.getLevel();
+            if (level < mapCost) return true;
+            ItemStack item = player.getItemInHand();
+            if (listener.convert(item, player)) {
+                player.setLevel(level - mapCost);
+                player.setItemInHand(item);
+            }
+            return true;
+        }
+        if (args.length > 0 && "reload".equalsIgnoreCase(args[0]) && sender.isOp()) {
             this.saveDefaultConfig();
             this.reloadConfig();
             sender.sendMessage("配置文件已重载");
