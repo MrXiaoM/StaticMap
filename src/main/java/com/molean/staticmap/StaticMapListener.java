@@ -118,7 +118,7 @@ public class StaticMapListener implements Listener {
 
         int ticks = plugin.getAnvilDelayTicks();
         if (ticks > 0) {
-            plugin.getScheduler().runLater(() -> runPrepareAnvil(uuid, player, firstItem, inv, event), 1L);
+            plugin.getScheduler().runLater(() -> runPrepareAnvil(uuid, player, firstItem, inv, event), ticks);
         } else {
             runPrepareAnvil(uuid, player, firstItem, inv, event);
         }
@@ -126,7 +126,7 @@ public class StaticMapListener implements Listener {
 
     @SuppressWarnings({"removal", "deprecation"})
     private void runPrepareAnvil(UUID uuid, Player player, ItemStack firstItem, AnvilInventory inv, PrepareAnvilEvent event) {
-        preparing.remove(uuid);
+        if (!preparing.remove(uuid)) return;
         ItemStack itemStack = firstItem.clone();
         ItemMeta meta = itemStack.getItemMeta();
         if (meta instanceof MapMeta) {
