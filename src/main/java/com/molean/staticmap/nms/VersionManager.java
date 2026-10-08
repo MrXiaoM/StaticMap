@@ -17,14 +17,22 @@ public class VersionManager {
     }
     public static Status init(Logger logger) {
         String ver = IVersion.getNMSVersion();
+        if (matchVersions(ver, "26.3")) {
+            nms = new Version_26_3();
+            return Status.OK;
+        }
+        if (matchVersions(ver, "26.2")) {
+            nms = new Version_26_2();
+            return Status.OK;
+        }
         if (matchVersions(ver, "26.1")) {
             nms = new Version_26_1();
             return Status.OK;
         }
         if (matchVersions(ver, "26.")) {
-            nms = new Version_26_1();
-            logger.warning("你正在使用 26.1+ 版本，这个版本可能不受支持");
-            logger.warning("当前插件正在使用 26.1 的服务端实现来代替，可能存在一些问题");
+            nms = new Version_26_3();
+            logger.warning("你正在使用 26.3+ 版本，这个版本可能不受支持");
+            logger.warning("当前插件正在使用 26.3 的服务端实现来代替，可能存在一些问题");
             return Status.OK;
         }
         if (matchVersions(ver, "v1_21_R4", "v1_21_R5", "v1_21_R6", "v1_21_R7", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11")) {
