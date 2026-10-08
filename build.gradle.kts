@@ -24,10 +24,10 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
     // compileOnly("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT")
 
-    compileOnly("me.clip:placeholderapi:2.12.2")
+    compileOnly("me.clip:placeholderapi:2.12.3")
     compileOnly("org.jetbrains:annotations:24.0.0")
 
-    implementation("de.tr7zw:item-nbt-api:2.15.7")
+    implementation("de.tr7zw:item-nbt-api:2.16.1")
     implementation("com.github.technicallycoded:FoliaLib:0.4.4") { isTransitive = false }
 
     for (proj in rootProject.project(":nms").subprojects) {
