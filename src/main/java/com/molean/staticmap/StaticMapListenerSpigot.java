@@ -1,6 +1,5 @@
 package com.molean.staticmap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.event.EventHandler;
@@ -11,7 +10,7 @@ public class StaticMapListenerSpigot implements Listener {
     private final StaticMap plugin;
     private final StaticMapListener parent;
     public StaticMapListenerSpigot(StaticMap plugin, StaticMapListener parent) {
-        Bukkit.getPluginManager().registerEvents(this, this.plugin = plugin);
+        this.plugin = plugin;
         this.parent = parent;
     }
 
